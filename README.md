@@ -34,7 +34,7 @@ Every team member creates 2 paper models of a feature or workflow we want to vis
 
 #### Technical Notes:
 The dataset contains post id. The content of the post can be retrieved by the following API call:
-https://www.reddit.com/comments/1u4qkd/.json
+https://www.reddit.com/comments/commentIDhere/.json
 
 
 
