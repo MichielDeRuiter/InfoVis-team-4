@@ -15,6 +15,7 @@ Every team member creates 2 paper models of a feature or workflow we want to vis
 
 
 ### Idea's from brainstorm session
+This list is non-exhaustive. If you have other idea, please add it below or into the board. 
 
 * Visualize how communities evolved over the years -> timeline
 * During election cycle, explore relationship between communities
@@ -23,11 +24,9 @@ Every team member creates 2 paper models of a feature or workflow we want to vis
 * Most popular ones
 * Visual link explorer -> seo backlinks
 * Wordcloud (realtime, get body content and generate)
-* Feature vector analysis
-* View full text of the 
-* Chain links analysis: 
-** how many levels deep
-** Echo chamber detection
+* (Related) Feature vector analysis: look at the feature vector of a post, find other posts with similar percentages and where they link
+* Chain links analysis: how many levels deep
+* Echo chamber detection
 * Find related subreddits by looking where they link the most
 * Thread brigading detection based on sentiment
 
