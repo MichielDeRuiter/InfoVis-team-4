@@ -5,6 +5,8 @@
 ### Meeting notes: 
 Discussed which dataset to use. Outcome: use Reddit data
 
+We will have teem meetings every Wednesday after the lecture and every Thursday after our TA meeting. 
+
 #### Decisions:
 * Use Python and Flask as back-end
 * Front-end to use will be decided base don features we want to visualize
