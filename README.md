@@ -11,6 +11,7 @@ We will have teem meetings every Wednesday after the lecture and every Thursday 
 * Use Python and Flask as back-end
 * Front-end to use will be decided base don features we want to visualize
 * Use git branching model, where master=stable, all other features are developed in a separate branch. Changes go through a feature review via pull request. 
+* Focus on analytics primarily
 
 #### Action items:
 Every team member creates 2 paper models of a feature or workflow we want to visualize. Next week we go over the features and discuss any changes
