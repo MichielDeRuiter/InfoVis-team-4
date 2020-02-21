@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+	<meta charset="utf-8">
+	<title>Home Group 4</title>
+</head>
+
+<body>
+	{% extends "template.html" %}
+	{% block content %}
+	<div class="container">
+			{% for part in plot %}
+				{{part | safe}}
+			{% endfor %}
+	</div>
+	{% endblock %}
+</body>
+
+</html>

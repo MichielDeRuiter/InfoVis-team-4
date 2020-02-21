@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+	<meta charset="utf-8">
+	<title>Group 4</title>
+	<link rel="stylesheet" href="{{url_for('static', filename='css/stylesheet.css')}}">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="http://cdn.pydata.org/bokeh/release/bokeh-1.4.0.min.css" type="text/css" />
+    <script type="text/javascript" src="http://cdn.pydata.org/bokeh/release/bokeh-1.4.0.min.js"></script>
+
+</head>
+<body>
+	<header>
+		<nav class="navbar" id="myTopnav">
+			<!--<a class="navbar-logo" href="{{ url_for('index') }}">
+				<img src="static/images/sparan-logo.png" width="50" height="50" alt="">
+			</a>-->
+			<div class="navbar-items">
+				<a class="nav-link {%if request.path == '/'%}active{%endif%}" href="{{ url_for('index') }}">Home</a>
+				<a class="nav-link {%if request.path == '/vis1'%}active{%endif%}" href="{{ url_for('vis1') }}">Vis 1</a>
+				<a class="nav-link {%if request.path == '/vis2'%}active{%endif%}" href="{{ url_for('vis2') }}">Vis 2</a>
+				<a class="nav-link {%if request.path == '/vis3'%}active{%endif%}" href="{{ url_for('vis3') }}">Vis 3</a>
+				<a href="javascript:void(0);" class="icon" onclick="myFunction()">
+					<i class="fa fa-bars"></i>
+				</a>
+			</div>
+
+		</nav>
+	</header>
+	<main role="main">
+		{% block content %}
+
+		{% endblock %}
+	</main>
+	<footer class="footer">
+		<div class="container">
+			<span>&copy; 2020 - 4</span>
+		</div>
+		<script>
+		function myFunction() {
+		  var x = document.getElementById("myTopnav");
+		  if (x.className === "navbar") {
+			x.className += " responsive";
+		  } else {
+			x.className = "navbar";
+		  }
+		}
+</script>
+	</footer>
+</body>
+</html>
