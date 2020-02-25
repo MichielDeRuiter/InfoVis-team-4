@@ -34,16 +34,12 @@ def vis2():
 	
 @app.route('/vis3')
 def vis3():
-	#plot1 = compare_plot.create_hbar(data_400)
-	#plot3 = compare_plot.create_hbar2(data_400)
-	#layout = row(plot1)
-	#plots = json_item(layout, "myplot")
 	return render_template('vis3.html')
 	
 @app.route('/plot')
 def plot():
-	plot1 = compare_plot.create_hbar(data_400)
-	plot3 = compare_plot.create_hbar2(data_400)
+	plot1 = compare_plot.create_pie_out(data_400)
+	plot3 = compare_plot.create_pie_in(data_400)
 	layout = row(plot1, plot3)
 	plots = json_item(layout, "myplot")
 	return json.dumps(plots)
