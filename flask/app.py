@@ -4,15 +4,20 @@ from flask_socketio import SocketIO
 import pandas as pd
 import compare_plot
 
+from bokeh.layouts import row, column, widgetbox
+from bokeh.embed import json_item
+
+import json
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'kjhlfsddkjhlsdakjhl'
 socketio = SocketIO(app)
 
-data_title = pd.read_csv('../reddit_raw_data/reddit_title_props_seperated.csv')
-data_body = pd.read_csv('../reddit_raw_data/reddit_body_props_seperated.csv')
-data = pd.read_csv('../data/reddit_total.csv')
-data_50 = pd.read_csv('../data/reddit_total_50.csv')
-data_400 = pd.read_csv('../data/reddit_total_400.csv')
+#data_title = pd.read_csv('../reddit_raw_data/reddit_title_props_seperated.csv')
+#data_body = pd.read_csv('../reddit_raw_data/reddit_body_props_seperated.csv')
+data = pd.read_csv('../../data/reddit_total.csv')
+data_50 = pd.read_csv('../../data/reddit_total_50.csv')
+data_400 = pd.read_csv('../../data/reddit_total_400.csv')
 
 
 @app.route('/')
@@ -29,8 +34,19 @@ def vis2():
 	
 @app.route('/vis3')
 def vis3():
-	plot = compare_plot.create_hbar()
-	return render_template('vis3.html', plot=plot)
+	#plot1 = compare_plot.create_hbar(data_400)
+	#plot3 = compare_plot.create_hbar2(data_400)
+	#layout = row(plot1)
+	#plots = json_item(layout, "myplot")
+	return render_template('vis3.html')
+	
+@app.route('/plot')
+def plot():
+	plot1 = compare_plot.create_hbar(data_400)
+	plot3 = compare_plot.create_hbar2(data_400)
+	layout = row(plot1, plot3)
+	plots = json_item(layout, "myplot")
+	return json.dumps(plots)
 
 
 if __name__ == '__main__':
