@@ -42,7 +42,22 @@ https://www.reddit.com/comments/commentIDhere/.json
 
 ## Week 3
 
+### Meeting 19/02
+
+* Discussed high level paper prototyping for 2 views
+* Discussed architecture of the solution and how we will implement it: use Python (Flask) with Pandas for the data processing. Frontend will be up to the implementation teams per view, including D3 and Bokeh for interactive views. 
+* Discussed what to ask Georgi for next day and get initial design approved. 
+* Started working on data processing with Pandas to create an API to retrieve the data
+
 ## Week 4
+
+### Meeting 26/02
+
+* Make functional prototype by next week
+* Visualization design <see image>
+* Navigate over time in discreet time intervals on the bottom
+* Main screen displays graph of interactions between subreddits, where line thickness and color represent different features
+* Hover or click on subreddit shows a radar plot for a given subreddit, showing relationships between these features
 
 ## Week 5
 
