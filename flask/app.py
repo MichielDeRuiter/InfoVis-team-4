@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_socketio import SocketIO
 import pandas as pd
 import compare_plot
@@ -160,7 +160,13 @@ def main_screen():
 def main_screen_date_range():
     return Flask.make_response(jsonify(filtered_main_menu_response), 200)
 
-
+@app.route("/example", methods=['GET', 'POST'])
+def example():
+	if 'query' in request.args:
+		query = request.args['query']
+		print(query)
+		return jsonify(filtered_main_menu_response)
+	else: return jsonify(main_menu_response)
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
