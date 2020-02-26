@@ -55,9 +55,11 @@ https://www.reddit.com/comments/commentIDhere/.json
 
 * Make functional prototype by next week
 * Visualization design <see image>
-* Navigate over time in discreet time intervals on the bottom
-* Main screen displays graph of interactions between subreddits, where line thickness and color represent different features
+* Navigate over time in discreet time intervals on the bottom, support playing animation over time
+* Main screen displays graph of interactions between subreddits, where line thickness and color represent different features.
+  Optionally the placement of the graph nodes could convey additional information. 
 * Hover or click on subreddit shows a radar plot for a given subreddit, showing relationships between these features
+* After meeting: continued work on API and started with visualization skeleton first screen
 
 ## Week 5
 
