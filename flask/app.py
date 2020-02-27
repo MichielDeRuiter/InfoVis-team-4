@@ -61,28 +61,34 @@ main_menu_response = {
             "outgoingVolume": 450
         }
     ],
-    "timeseries": [
+    "timeseries":
         {
-            "fromDate": 1,
-            "toDate": 10,
-            "totalVolume": 300
-        },
-        {
-            "fromDate": 11,
-            "toDate": 20,
-            "totalVolume": 450
-        },
-        {
-            "fromDate": 21,
-            "toDate": 30,
-            "totalVolume": 700
-        },
-        {
-            "fromDate": 31,
-            "toDate": 40,
-            "totalVolume": 550
+            "minValue": 100,
+            "maxValue": 700,
+            "attributeName": "Total Volume",
+            "values": [
+                {
+                    "fromDate": 1,
+                    "toDate": 10,
+                    "value": 300
+                },
+                {
+                    "fromDate": 11,
+                    "toDate": 20,
+                    "value": 450
+                },
+                {
+                    "fromDate": 21,
+                    "toDate": 30,
+                    "value": 700
+                },
+                {
+                    "fromDate": 31,
+                    "toDate": 40,
+                    "value": 550
+                }
+            ]
         }
-    ]
 }
 
 
