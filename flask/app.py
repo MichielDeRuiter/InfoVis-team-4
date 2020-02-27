@@ -168,32 +168,17 @@ radar_view_response = {
 }
 
 
+#######################
+# PRODUCTION ENDPOINTS
+#######################
 
-@app.route('/')
-def index():
-    return render_template('index.html', data=data_400)
+"""
+Returns a list of data for the network and bar graph visualization.
 
-@app.route('/vis1')
-def vis1():
-    return render_template('vis1.html', dataframe=data_400[0:100])	
-
-@app.route('/vis2')
-def vis2():
-    return render_template('vis2.html', data=data_400)
-
-@app.route('/vis3')
-def vis3():
-    return render_template('vis3.html')
-
-@app.route('/plot')
-def plot():
-    plot1 = compare_plot.create_pie_out(data_400)
-    plot3 = compare_plot.create_pie_in(data_400)
-    layout = row(plot1, plot3)
-    plots = json_item(layout, "myplot")
-    return json.dumps(plots)
-
-
+Optional arguments:
+fromDate: inclusive start date for the filtering
+endDate: exclusive end date for the filtering
+"""
 @app.route("/main", methods=['GET', 'POST'])
 @cross_origin()
 def main_screen():
@@ -203,7 +188,11 @@ def main_screen():
         mimetype="application/json"
     )
 
-
+"""
+Searches for a subreddit with given name (future also fulltext search on attributes and description)
+Mandatory parameters:
+name: name of the subreddit to search for
+"""
 @app.route("/search", methods=['GET', 'POST'])
 @cross_origin()
 def main_screen_date_range():
@@ -213,6 +202,11 @@ def main_screen_date_range():
         mimetype="application/json"
     )
 
+"""
+Returns data for the radar plot for a given 1 subreddit
+Mandatory parameters:
+name: exact name of the subreddit for which to retrieve statistics
+"""
 @app.route("/radar", methods=['GET', 'POST'])
 @cross_origin()
 def radar_screen():
@@ -231,6 +225,37 @@ def example():
 		print(query)
 		return jsonify(filtered_main_menu_response)
 	else: return jsonify(main_menu_response)
+
+
+###################
+# TESTING ENDPOINTS
+###################
+@app.route('/')
+def index():
+    return render_template('index.html', data=data_400)
+
+@app.route('/vis1')
+def vis1():
+    return render_template('vis1.html', dataframe=data_400[0:100])
+
+@app.route('/vis2')
+def vis2():
+    return render_template('vis2.html', data=data_400)
+
+@app.route('/vis3')
+def vis3():
+    return render_template('vis3.html')
+
+@app.route('/plot')
+def plot():
+    plot1 = compare_plot.create_pie_out(data_400)
+    plot3 = compare_plot.create_pie_in(data_400)
+    layout = row(plot1, plot3)
+    plots = json_item(layout, "myplot")
+    return json.dumps(plots)
+
+
+
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
