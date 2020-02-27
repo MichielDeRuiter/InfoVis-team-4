@@ -61,6 +61,11 @@ https://www.reddit.com/comments/commentIDhere/.json
 * Hover or click on subreddit shows a radar plot for a given subreddit, showing relationships between these features
 * After meeting: continued work on API and started with visualization skeleton first screen
 
+
+### Team Meeting 27/02
+* Finalized static API to return data for frontend and began working on producing results in the backend
+* Created frontend skeleton structure with D3.js
+
 ## Week 5
 
 ## Week 6
