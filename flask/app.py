@@ -1,5 +1,6 @@
 import os
 from flask import Flask, render_template, request
+from flask_cors import cross_origin
 from flask_socketio import SocketIO
 import pandas as pd
 import compare_plot
@@ -192,15 +193,18 @@ def plot():
 
 
 @app.route("/main", methods=['GET', 'POST'])
+@cross_origin()
 def main_screen():
     return jsonify(main_menu_response)
 
 
 @app.route("/search", methods=['GET', 'POST'])
+@cross_origin()
 def main_screen_date_range():
     return Flask.make_response(jsonify(filtered_main_menu_response), 200)
 
 @app.route("/radar", methods=['GET', 'POST'])
+@cross_origin()
 def radar_screen():
     return Flask.make_response(jsonify(radar_view_response), 200)
 
