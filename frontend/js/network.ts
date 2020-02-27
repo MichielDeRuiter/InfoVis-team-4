@@ -20,10 +20,10 @@ var svg = d3.select("#network")
   .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")");
     //console.log('hola mundo', data)
-
+//
 //d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_network.json", function( data) {
   d3.json("http://127.0.0.1:5000/search", function(data) {
-    
+
   console.log(data)
 ////d3.json("./data.json", function( data) {
   //setTimeout(()=>{
