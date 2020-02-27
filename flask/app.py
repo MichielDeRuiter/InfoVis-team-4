@@ -16,9 +16,9 @@ socketio = SocketIO(app)
 
 #data_title = pd.read_csv('../reddit_raw_data/reddit_title_props_seperated.csv')
 #data_body = pd.read_csv('../reddit_raw_data/reddit_body_props_seperated.csv')
-data = pd.read_csv('../../data/reddit_total.csv')
-data_50 = pd.read_csv('../../data/reddit_total_50.csv')
-#data_400 = pd.read_csv('../../data/reddit_total_400.csv')
+#data = pd.read_csv('../data/reddit_total.csv')
+#data_50 = pd.read_csv('../../data/reddit_total_50.csv')
+data_400 = pd.read_csv('../data/reddit_total_400.csv')
 
 
 main_menu_response = {
@@ -168,7 +168,7 @@ radar_view_response = {
 
 @app.route('/')
 def index():
-    return render_template('index.html', data=data)
+    return render_template('index.html', data=data_400)
 
 @app.route('/vis1')
 def vis1():
@@ -176,7 +176,7 @@ def vis1():
 
 @app.route('/vis2')
 def vis2():
-    return render_template('vis2.html', data=data_50)
+    return render_template('vis2.html', data=data_400)
 
 @app.route('/vis3')
 def vis3():
@@ -201,7 +201,7 @@ def main_screen_date_range():
     return Flask.make_response(jsonify(filtered_main_menu_response), 200)
 
 @app.route("/radar", methods=['GET', 'POST'])
-def main_screen_date_range():
+def radar_screen():
     return Flask.make_response(jsonify(radar_view_response), 200)
 
 
