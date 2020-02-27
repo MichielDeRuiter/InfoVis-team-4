@@ -123,6 +123,46 @@ filtered_main_menu_response = {
     ]
 }
 
+radar_view_response = {
+    "subredditName": "soccer",
+    "attributes": [
+        {
+            "name": "Sentiment",
+            "value": 0.7,
+            "valueNormalized": 0.7,
+            "valueMin": -1,
+            "valueMax": 1
+        },
+        {
+            "name": "Readability Score",
+            "value": 12,
+            "valueNormalized": 0.9,
+            "valueMin": 0,
+            "valueMax": 14
+        },
+        {
+            "name": "Volume Incoming Ratio",
+            "value": 0.45,
+            "valueNormalized": 0.45,
+            "valueMin": 0,
+            "valueMax": 1
+        },
+        {
+            "name": "Volume Outgoing Ratio",
+            "value": 0.25000000001,
+            "valueNormalized": 0.25000000001,  # this is on purpose to test UI rounding
+            "valueMin": 0,
+            "valueMax": 1
+        },
+        {
+            "name": "Total Volume to top 50 subreddits",
+            "value": 12345678,
+            "valueNormalized": 0.43333333,
+            "valueMin": 0,
+            "valueMax": 1
+        },
+    ]
+}
 
 
 
@@ -151,14 +191,20 @@ def plot():
     return json.dumps(plots)
 
 
-@app.route("/main")
+@app.route("/main", methods=['GET', 'POST'])
 def main_screen():
     return jsonify(main_menu_response)
 
 
-@app.route("/search")
+@app.route("/search", methods=['GET', 'POST'])
 def main_screen_date_range():
     return Flask.make_response(jsonify(filtered_main_menu_response), 200)
+
+@app.route("/radar", methods=['GET', 'POST'])
+def main_screen_date_range():
+    return Flask.make_response(jsonify(radar_view_response), 200)
+
+
 
 @app.route("/example", methods=['GET', 'POST'])
 def example():
