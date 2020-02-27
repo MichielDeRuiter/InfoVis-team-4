@@ -5,6 +5,8 @@ from flask_socketio import SocketIO
 import pandas as pd
 import compare_plot
 from flask import jsonify
+from flask import Response
+
 
 from bokeh.layouts import row, column, widgetbox
 from bokeh.embed import json_item
@@ -195,18 +197,30 @@ def plot():
 @app.route("/main", methods=['GET', 'POST'])
 @cross_origin()
 def main_screen():
-    return jsonify(main_menu_response)
+    return app.response_class(
+        response=json.dumps(main_menu_response),
+        status=200,
+        mimetype="application/json"
+    )
 
 
 @app.route("/search", methods=['GET', 'POST'])
 @cross_origin()
 def main_screen_date_range():
-    return Flask.make_response(jsonify(filtered_main_menu_response), 200)
+    return app.response_class(
+        response=json.dumps(filtered_main_menu_response),
+        status=200,
+        mimetype="application/json"
+    )
 
 @app.route("/radar", methods=['GET', 'POST'])
 @cross_origin()
 def radar_screen():
-    return Flask.make_response(jsonify(radar_view_response), 200)
+    return app.response_class(
+        response=json.dumps(radar_view_response),
+        status=200,
+        mimetype="application/json"
+    )
 
 
 
