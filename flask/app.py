@@ -21,7 +21,7 @@ socketio = SocketIO(app)
 #data_body = pd.read_csv('../reddit_raw_data/reddit_body_props_seperated.csv')
 #data = pd.read_csv('../data/reddit_total.csv')
 #data_50 = pd.read_csv('../../data/reddit_total_50.csv')
-data_400 = pd.read_csv('../data/reddit_total_400.csv')
+#data_400 = pd.read_csv('../data/reddit_total_400.csv')
 
 
 main_menu_response = {
