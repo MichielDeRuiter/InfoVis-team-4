@@ -196,6 +196,7 @@ def main_screen():
 		endDate = request.args['endDate']
 	if (fromDate and endDate):
 		response = data.loc[data['days'].between(int(fromDate), int(endDate))]
+		total_value = len(response)
 		return app.response_class(
 			response=json.dumps(main_menu_response),
 			status=200,
