@@ -238,45 +238,23 @@ def main_screen_date_range():
 	if 'name' in request.args:
 		name = request.args['name']
 		response = data.loc[data['SOURCE_SUBREDDIT'] == name]
-		filtered_main_menu_response_searched = {
-			"centeredSubredditName": name,
-			"nodes": [
-				{
-					"subredditName": "soccer",
-					"subscriberCount": 500
-				},
-				{
-					"subredditName": "barcelona",
-					"subscriberCount": 125
-				},
-				{
-					"subredditName": "chelsea",
-					"subscriberCount": 450
-				}
-			],
-			"links": [
-				{
-					"fromSubredditName": "soccer",
-					"toSubredditName": "barcelona",
-					"overallSentiment": 0.3,
-					"incomingSentiment": -0.5,
-					"outgoingSentiment": 0.8,
-					"totalVolume": 400,
-					"incomingVolume": 300,
-					"outgoingVolume": 100
-				},
-				{
-					"fromSubredditName": "soccer",
-					"toSubredditName": "chelsea",
-					"overallSentiment": 0.4,
-					"incomingSentiment": 0.5,
-					"outgoingSentiment": -0.1,
-					"totalVolume": 750,
-					"incomingVolume": 300,
-					"outgoingVolume": 450
-				}
-			]
-		}
+		link_pairs = response.groupby(['SOURCE_SUBREDDIT', 'TARGET_SUBREDDIT']).size().reset_index().values.tolist()
+		print(link_pairs)
+		nodes = []
+		links = []
+		for link in link_pairs:
+			nodes.append({
+				"subredditName": link[1],
+				"subscriberCount":randint(0,100000)
+			})
+			links.append({
+				"fromSubredditName": link[0],
+				"toSubredditName": link[1],
+				"sentiment": 0.3,
+				"volume": link[2]
+			})
+		print(nodes)
+		filtered_main_menu_response_searched = {"nodes":nodes,"links":links}
 		return app.response_class(
 			response=json.dumps(filtered_main_menu_response_searched),
 			status=200,
