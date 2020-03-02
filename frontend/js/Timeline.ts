@@ -3,12 +3,12 @@ import Configuration from './Configuration'
 import ServerAPI from './ServerAPI'
 import BasicD3Visualization from './BasicD3Visualization'
 
-export default class Network extends BasicD3Visualization
+export default class Timeline extends BasicD3Visualization
 {
   constructor()
   {
 
-    super('network');
+    super('timeline');
 
     let ctx = this;
     // we get the data from the Flask server
