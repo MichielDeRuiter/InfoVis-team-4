@@ -199,7 +199,10 @@ def main_screen():
 		response = data.loc[data['days'].between(int(fromDate), int(endDate))]
 		total_value = len(response)
 		uniques = response.SOURCE_SUBREDDIT.unique()
-		link_pairs = response.groupby(['SOURCE_SUBREDDIT', 'TARGET_SUBREDDIT']).size().reset_index().values.tolist()
+		link_pairs_temp = response.groupby(['SOURCE_SUBREDDIT', 'TARGET_SUBREDDIT']).size().reset_index()
+		#link_pairs_temp.to_csv('temp.csv')
+		link_pairs_temp = link_pairs_temp.loc[link_pairs_temp[0].ge(5)]
+		link_pairs = link_pairs_temp.values.tolist()
 		nodes = []
 		links = []
 		for reddit in uniques:
@@ -215,9 +218,9 @@ def main_screen():
             "incomingVolume": 300,
             "outgoingVolume": 100
 			})
-		main_menu_response = {"nodes":nodes,"links":links}
+		main_menu_response_filtered = {"nodes":nodes,"links":links}
 		return app.response_class(
-			response=json.dumps(main_menu_response),
+			response=json.dumps(main_menu_response_filtered),
 			status=200,
 			mimetype="application/json"
 		) 
