@@ -13,6 +13,7 @@ from bokeh.embed import json_item
 
 import json
 
+from random import randint
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'kjhlfsddkjhlsdakjhl'
 socketio = SocketIO(app)
@@ -197,6 +198,24 @@ def main_screen():
 	if (fromDate and endDate):
 		response = data.loc[data['days'].between(int(fromDate), int(endDate))]
 		total_value = len(response)
+		uniques = response.SOURCE_SUBREDDIT.unique()
+		link_pairs = response.groupby(['SOURCE_SUBREDDIT', 'TARGET_SUBREDDIT']).size().reset_index().values.tolist()
+		nodes = []
+		links = []
+		for reddit in uniques:
+			nodes.append({"subredditName":reddit, "subscriberCount":randint(0,100000)})
+		for link in link_pairs:
+			links.append({
+			"fromSubredditName": link[0],
+            "toSubredditName": link[1],
+            "overallSentiment": 0.3,
+            "incomingSentiment": -0.5,
+            "outgoingSentiment": 0.8,
+            "totalVolume": link[2],
+            "incomingVolume": 300,
+            "outgoingVolume": 100
+			})
+		main_menu_response = {"nodes":nodes,"links":links}
 		return app.response_class(
 			response=json.dumps(main_menu_response),
 			status=200,
