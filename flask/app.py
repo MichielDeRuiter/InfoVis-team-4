@@ -21,7 +21,7 @@ socketio = SocketIO(app)
 #data_body = pd.read_csv('../reddit_raw_data/reddit_body_props_seperated.csv')
 #data = pd.read_csv('../data/reddit_total.csv')
 #data_50 = pd.read_csv('../../data/reddit_total_50.csv')
-#data_400 = pd.read_csv('../data/reddit_total_400.csv')
+data = pd.read_csv('../data/reddit_total_400.csv')
 
 
 main_menu_response = {
@@ -184,43 +184,162 @@ Returns a list of data for the network and bar graph visualization.
 Optional arguments:
 fromDate: inclusive start date for the filtering
 endDate: exclusive end date for the filtering
+example: http://localhost:5000/main?fromDate=20&endDate=800
 """
 @app.route("/main", methods=['GET', 'POST'])
 @cross_origin()
 def main_screen():
-    return app.response_class(
-        response=json.dumps(main_menu_response),
-        status=200,
-        mimetype="application/json"
-    )
+	fromDate, endDate = None, None
+	if 'fromDate' in request.args:
+		fromDate = request.args['fromDate']
+	if 'endDate' in request.args:
+		endDate = request.args['endDate']
+	if (fromDate and endDate):
+		response = data.loc[data['days'].between(int(fromDate), int(endDate))]
+		total_value = len(response)
+		return app.response_class(
+			response=json.dumps(main_menu_response),
+			status=200,
+			mimetype="application/json"
+		) 
+	else:
+		return app.response_class(
+			response=json.dumps(main_menu_response),
+			status=200,
+			mimetype="application/json"
+		)
 
 """
 Searches for a subreddit with given name (future also fulltext search on attributes and description)
 Mandatory parameters:
 name: name of the subreddit to search for
+example: http://localhost:5000/search?name=soccer
 """
 @app.route("/search", methods=['GET', 'POST'])
 @cross_origin()
 def main_screen_date_range():
-    return app.response_class(
-        response=json.dumps(filtered_main_menu_response),
-        status=200,
-        mimetype="application/json"
-    )
+	if 'name' in request.args:
+		name = request.args['name']
+		response = data.loc[data['SOURCE_SUBREDDIT'] == name]
+		filtered_main_menu_response_searched = {
+			"centeredSubredditName": name,
+			"nodes": [
+				{
+					"subredditName": "soccer",
+					"subscriberCount": 500
+				},
+				{
+					"subredditName": "barcelona",
+					"subscriberCount": 125
+				},
+				{
+					"subredditName": "chelsea",
+					"subscriberCount": 450
+				}
+			],
+			"links": [
+				{
+					"fromSubredditName": "soccer",
+					"toSubredditName": "barcelona",
+					"overallSentiment": 0.3,
+					"incomingSentiment": -0.5,
+					"outgoingSentiment": 0.8,
+					"totalVolume": 400,
+					"incomingVolume": 300,
+					"outgoingVolume": 100
+				},
+				{
+					"fromSubredditName": "soccer",
+					"toSubredditName": "chelsea",
+					"overallSentiment": 0.4,
+					"incomingSentiment": 0.5,
+					"outgoingSentiment": -0.1,
+					"totalVolume": 750,
+					"incomingVolume": 300,
+					"outgoingVolume": 450
+				}
+			]
+		}
+		return app.response_class(
+			response=json.dumps(filtered_main_menu_response_searched),
+			status=200,
+			mimetype="application/json"
+		)
+	else: 
+		return app.response_class(
+			response=json.dumps(filtered_main_menu_response),
+			status=200,
+			mimetype="application/json"
+		)
 
 """
 Returns data for the radar plot for a given 1 subreddit
 Mandatory parameters:
 name: exact name of the subreddit for which to retrieve statistics
+example: http://localhost:5000/radar?name=soccer
 """
 @app.route("/radar", methods=['GET', 'POST'])
 @cross_origin()
 def radar_screen():
-    return app.response_class(
-        response=json.dumps(radar_view_response),
-        status=200,
-        mimetype="application/json"
-    )
+	rader_columns=['SOURCE_SUBREDDIT', 'LINK_SENTIMENT', 'Automated readability index']
+	if 'name' in request.args:
+		name = request.args['name']
+		response1 = data.loc[data['SOURCE_SUBREDDIT'] == name][rader_columns]
+		response2 = data.loc[data['TARGET_SUBREDDIT'] == name]['TARGET_SUBREDDIT']
+		response1['Link_normalized']=(response1['LINK_SENTIMENT']-response1['LINK_SENTIMENT'].min())/(response1['LINK_SENTIMENT'].max()-response1['LINK_SENTIMENT'].min())
+		response1['ARI_normalized']=(response1['Automated readability index']-response1['Automated readability index'].min())/(response1['Automated readability index'].max()-response1['Automated readability index'].min())
+		incoming_volume = len(response2)/(len(response1)+len(response2))
+		radar_view_response_searched = {
+			"subredditName": name,
+			"attributes": [
+				{
+					"name": "Sentiment",
+					"value": response1['LINK_SENTIMENT'].mean(),
+					"valueNormalized": response1['Link_normalized'].mean(),
+					"valueMin": response1['LINK_SENTIMENT'].min(),
+					"valueMax": response1['LINK_SENTIMENT'].max()
+				},
+				{
+					"name": "Readability Score",
+					"value": response1['Automated readability index'].mean(),
+					"valueNormalized": response1['ARI_normalized'].mean(),
+					"valueMin": response1['Automated readability index'].min(),
+					"valueMax": response1['Automated readability index'].max()
+				},
+				{
+					"name": "Volume Incoming Ratio",
+					"value": incoming_volume,
+					"valueNormalized": 0.45,
+					"valueMin": 0,
+					"valueMax": 1
+				},
+				{
+					"name": "Volume Outgoing Ratio",
+					"value": 1-incoming_volume,
+					"valueNormalized": 0.25000000001,  # this is on purpose to test UI rounding
+					"valueMin": 0,
+					"valueMax": 1
+				},
+				{
+					"name": "Total Volume to top 50 subreddits",
+					"value": 12345678,
+					"valueNormalized": 0.43333333,
+					"valueMin": 0,
+					"valueMax": 1
+				},
+			]
+		}
+		return app.response_class(
+			response=json.dumps(radar_view_response_searched),
+			status=200,
+			mimetype="application/json"
+		)
+	else: 
+		return app.response_class(
+			response=json.dumps(radar_view_response),
+			status=200,
+			mimetype="application/json"
+		)
 
 
 
