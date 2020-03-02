@@ -193,9 +193,14 @@ def main_screen():
 	fromDate, endDate = None, None
 	if 'fromDate' in request.args:
 		fromDate = request.args['fromDate']
+	else:
+		fromDate = 0
 	if 'endDate' in request.args:
 		endDate = request.args['endDate']
-	if (fromDate and endDate):
+	else:
+		endDate = 1216
+	print(fromDate)
+	if (fromDate != None and endDate != None):
 		response = data.loc[data['days'].between(int(fromDate), int(endDate))]
 		total_value = len(response)
 		uniques = response.SOURCE_SUBREDDIT.unique()
@@ -211,22 +216,12 @@ def main_screen():
 			links.append({
 			"fromSubredditName": link[0],
             "toSubredditName": link[1],
-            "overallSentiment": 0.3,
-            "incomingSentiment": -0.5,
-            "outgoingSentiment": 0.8,
-            "totalVolume": link[2],
-            "incomingVolume": 300,
-            "outgoingVolume": 100
+            "sentiment": 0.3,
+            "volume": link[2]
 			})
 		main_menu_response_filtered = {"nodes":nodes,"links":links}
 		return app.response_class(
 			response=json.dumps(main_menu_response_filtered),
-			status=200,
-			mimetype="application/json"
-		) 
-	else:
-		return app.response_class(
-			response=json.dumps(main_menu_response),
 			status=200,
 			mimetype="application/json"
 		)
