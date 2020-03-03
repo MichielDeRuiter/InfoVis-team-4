@@ -4,7 +4,7 @@ export default class Configuration{
     private static instance: Configuration;
 
     private constructor() {
-        this.fask_server_url = "http://127.0.0.1:5000/search";
+        this.fask_server_url = "http://127.0.0.1:5000/main";
     }
 
     // get the instance of the singleton if exist, create the instance if not

@@ -1,4 +1,3 @@
-import data from './data.json'
 import Configuration from './Configuration'
 import ServerAPI from './ServerAPI'
 import BasicD3Visualization from './BasicD3Visualization'
