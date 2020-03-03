@@ -352,15 +352,15 @@ def example():
 ###################
 @app.route('/')
 def index():
-    return render_template('index.html', data=data_400)
+    return render_template('index.html', data=data)
 
 @app.route('/vis1')
 def vis1():
-    return render_template('vis1.html', dataframe=data_400[0:100])
+    return render_template('vis1.html', dataframe=data[0:100])
 
 @app.route('/vis2')
 def vis2():
-    return render_template('vis2.html', data=data_400)
+    return render_template('vis2.html', data=data)
 
 @app.route('/vis3')
 def vis3():
@@ -368,8 +368,8 @@ def vis3():
 
 @app.route('/plot')
 def plot():
-    plot1 = compare_plot.create_pie_out(data_400)
-    plot3 = compare_plot.create_pie_in(data_400)
+    plot1 = compare_plot.create_pie_out(data)
+    plot3 = compare_plot.create_pie_in(data)
     layout = row(plot1, plot3)
     plots = json_item(layout, "myplot")
     return json.dumps(plots)
