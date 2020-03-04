@@ -1,4 +1,3 @@
-import data from './data.json'
 import Configuration from './Configuration'
 import ServerAPI from './ServerAPI'
 import BasicD3Visualization from './BasicD3Visualization'
@@ -16,7 +15,7 @@ export default class Network extends BasicD3Visualization
     // the server has to be running
     (ServerAPI.get()).getData(function(data) {
     // append the svg object to the body of the page
-
+    console.log(JSON.stringify(data))
     d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_network.json", function( data) {
       // Initialize the links
       var link = ctx.svg
@@ -24,6 +23,7 @@ export default class Network extends BasicD3Visualization
         .data(data.links)
         .enter()
         .append("line")
+
         .style("stroke", "#aaa")
 
       // Initialize the nodes
