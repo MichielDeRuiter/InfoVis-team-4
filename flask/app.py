@@ -279,6 +279,7 @@ def radar_screen():
 	rader_columns=['SOURCE_SUBREDDIT', 'LINK_SENTIMENT', 'Automated readability index']
 	if 'name' in request.args:
 		name = request.args['name']
+		name = name.lower()
 		response1 = data.loc[data['SOURCE_SUBREDDIT'] == name][rader_columns]
 		response2 = data.loc[data['TARGET_SUBREDDIT'] == name]['TARGET_SUBREDDIT']
 		response1['Link_normalized']=(response1['LINK_SENTIMENT']-response1['LINK_SENTIMENT'].min())/(response1['LINK_SENTIMENT'].max()-response1['LINK_SENTIMENT'].min())
@@ -289,28 +290,28 @@ def radar_screen():
 			"attributes": [
 				{
 					"name": "Sentiment",
-					"value": response1['LINK_SENTIMENT'].mean(),
-					"valueNormalized": response1['Link_normalized'].mean(),
-					"valueMin": response1['LINK_SENTIMENT'].min(),
-					"valueMax": response1['LINK_SENTIMENT'].max()
+					"value": float(response1['LINK_SENTIMENT'].mean()),
+					"valueNormalized": float(response1['Link_normalized'].mean()),
+					"valueMin": float(response1['LINK_SENTIMENT'].min()),
+					"valueMax": float(response1['LINK_SENTIMENT'].max())
 				},
 				{
 					"name": "Readability Score",
-					"value": response1['Automated readability index'].mean(),
-					"valueNormalized": response1['ARI_normalized'].mean(),
-					"valueMin": response1['Automated readability index'].min(),
-					"valueMax": response1['Automated readability index'].max()
+					"value": float(response1['Automated readability index'].mean()),
+					"valueNormalized": float(response1['ARI_normalized'].mean()),
+					"valueMin": float(response1['Automated readability index'].min()),
+					"valueMax": float(response1['Automated readability index'].max())
 				},
 				{
 					"name": "Volume Incoming Ratio",
-					"value": incoming_volume,
+					"value": float(incoming_volume),
 					"valueNormalized": 0.45,
 					"valueMin": 0,
 					"valueMax": 1
 				},
 				{
 					"name": "Volume Outgoing Ratio",
-					"value": 1-incoming_volume,
+					"value": float(1-incoming_volume),
 					"valueNormalized": 0.25000000001,  # this is on purpose to test UI rounding
 					"valueMin": 0,
 					"valueMax": 1
