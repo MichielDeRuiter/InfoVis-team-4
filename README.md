@@ -68,6 +68,13 @@ https://www.reddit.com/comments/commentIDhere/.json
 
 ## Week 5
 
+### Meeting 05/03
+
+* Prototype looking fine.
+* Important to focus on design: colors, user usability/interaction
+* Combine the invidual parts of the prototype and design this nicely
+* Fix the bar chart with time line soon
+
 ## Week 6
 
 ## Week 7
