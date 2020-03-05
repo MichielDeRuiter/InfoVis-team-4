@@ -275,6 +275,9 @@ def main_screen_date_range():
 			mimetype="application/json"
 		)
 
+def Convert(string): 
+    li = list(string.split(",")) 
+    return li 
 """
 Returns data for the radar plot for a given 1 subreddit
 Mandatory parameters:
@@ -286,56 +289,64 @@ example: http://localhost:5000/radar?name=soccer
 def radar_screen():
 	rader_columns=['SOURCE_SUBREDDIT', 'LINK_SENTIMENT', 'Automated readability index']
 	if 'name' in request.args:
-		name = request.args['name']
-		name = name.lower()
-		response1 = data.loc[data['SOURCE_SUBREDDIT'] == name][rader_columns]
-		response2 = data.loc[data['TARGET_SUBREDDIT'] == name]['TARGET_SUBREDDIT']
-		response1['Link_normalized']=(response1['LINK_SENTIMENT']-response1['LINK_SENTIMENT'].min())/(response1['LINK_SENTIMENT'].max()-response1['LINK_SENTIMENT'].min())
-		response1['ARI_normalized']=(response1['Automated readability index']-response1['Automated readability index'].min())/(response1['Automated readability index'].max()-response1['Automated readability index'].min())
-		incoming_volume = len(response2)/(len(response1)+len(response2))
-		radar_view_response_searched = {
-			"group": name,
-			"axes": [
-				{
-					"axis": "Automated readability index",
-					"value": float(response1['Automated readability index'].mean()),
-					"valueNormalized": float(response1['ARI_normalized'].mean()),
-					"valueMin": float(response1['Automated readability index'].min()),
-					"valueMax": float(response1['Automated readability index'].max()),
-					"description": 'TEST' 
-				},
-				{
-					"axis": "Sentiment",
-					"value": float(response1['LINK_SENTIMENT'].mean()),
-					"valueNormalized": float(response1['Link_normalized'].mean()),
-					"valueMin": float(response1['LINK_SENTIMENT'].min()),
-					"valueMax": float(response1['LINK_SENTIMENT'].max())
-				},
-				{
-					"axis": "Volume Incoming Ratio",
-					"value": float(incoming_volume),
-					"valueNormalized": 0.45,
-					"valueMin": 0,
-					"valueMax": 1
-				},
-				{
-					"axis": "Volume Outgoing Ratio",
-					"value": float(1-incoming_volume),
-					"valueNormalized": 0.25000000001,  # this is on purpose to test UI rounding
-					"valueMin": 0,
-					"valueMax": 1
-				},
-				{
-					"axis": "Total Volume to top 50 subreddits",
-					"value": 12345678,
-					"valueNormalized": 0.43333333,
-					"valueMin": 0,
-					"valueMax": 1
-				},
-			]
-		}
+		list = request.args['name']
+		list = Convert(list)
+		#name = name[0]
+		#name = name.lower()
+		nodes = []
+		for name in list:
+			name = name.lower()
+			print(name)
+			response1 = data.loc[data['SOURCE_SUBREDDIT'] == name][rader_columns]
+			response2 = data.loc[data['TARGET_SUBREDDIT'] == name]['TARGET_SUBREDDIT']
+			response1['Link_normalized']=(response1['LINK_SENTIMENT']-response1['LINK_SENTIMENT'].min())/(response1['LINK_SENTIMENT'].max()-response1['LINK_SENTIMENT'].min())
+			response1['ARI_normalized']=(response1['Automated readability index']-response1['Automated readability index'].min())/(response1['Automated readability index'].max()-response1['Automated readability index'].min())
+			incoming_volume = len(response2)/(len(response1)+len(response2))
+			radar_view_response_searched = {
+				"group": name,
+				"axes": [
+					{
+						"axis": "Automated readability index",
+						"value": float(response1['Automated readability index'].mean()),
+						"valueNormalized": float(response1['ARI_normalized'].mean()),
+						"valueMin": float(response1['Automated readability index'].min()),
+						"valueMax": float(response1['Automated readability index'].max()),
+						"description": 'TEST' 
+					},
+					{
+						"axis": "Sentiment",
+						"value": float(response1['LINK_SENTIMENT'].mean()),
+						"valueNormalized": float(response1['Link_normalized'].mean()),
+						"valueMin": float(response1['LINK_SENTIMENT'].min()),
+						"valueMax": float(response1['LINK_SENTIMENT'].max())
+					},
+					{
+						"axis": "Volume Incoming Ratio",
+						"value": float(incoming_volume),
+						"valueNormalized": 0.45,
+						"valueMin": 0,
+						"valueMax": 1
+					},
+					{
+						"axis": "Volume Outgoing Ratio",
+						"value": float(1-incoming_volume),
+						"valueNormalized": 0.25000000001,  # this is on purpose to test UI rounding
+						"valueMin": 0,
+						"valueMax": 1
+					},
+					{
+						"axis": "Total Volume to top 50 subreddits",
+						"value": 12345678,
+						"valueNormalized": 0.43333333,
+						"valueMin": 0,
+						"valueMax": 1
+					},
+				]
+			}
+			nodes.append(radar_view_response_searched)
+		
 		return app.response_class(
-			response=json.dumps(radar_view_response_searched),
+			response=json.dumps(nodes),
 			status=200,
 			mimetype="application/json"
 		)
