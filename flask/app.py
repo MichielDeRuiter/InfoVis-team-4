@@ -190,6 +190,7 @@ example: http://localhost:5000/main?fromDate=20&endDate=800
 @app.route("/main", methods=['GET', 'POST'])
 @cross_origin()
 def main_screen():
+	import time
 	fromDate, endDate = None, None
 	if 'fromDate' in request.args:
 		fromDate = request.args['fromDate']
@@ -199,9 +200,16 @@ def main_screen():
 		endDate = request.args['endDate']
 	else:
 		endDate = 1216
-	print(fromDate)
+	if 'top' in request.args:
+		top = request.args['top']
+		v = data.SOURCE_SUBREDDIT.value_counts()
+		treshold = v[int(top)]
+		start = time.process_time()
+		data2 = data[data.SOURCE_SUBREDDIT.isin(v.index[v.gt(treshold)])]
+	else: 
+		data2 = data
 	if (fromDate != None and endDate != None):
-		response = data.loc[data['days'].between(int(fromDate), int(endDate))]
+		response = data2.loc[data2['days'].between(int(fromDate), int(endDate))]
 		total_value = len(response)
 		uniques = response.SOURCE_SUBREDDIT.unique()
 		link_pairs_temp = response.groupby(['SOURCE_SUBREDDIT', 'TARGET_SUBREDDIT']).size().reset_index()
