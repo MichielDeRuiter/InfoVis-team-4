@@ -307,8 +307,8 @@ def radar_screen():
 				"axes": [
 					{
 						"axis": "Automated readability index",
-						"value": float(response1['Automated readability index'].mean()),
-						"valueNormalized": float(response1['ARI_normalized'].mean()),
+						"valueOLD": float(response1['Automated readability index'].mean()),
+						"value": float(response1['ARI_normalized'].mean()),
 						"valueMin": float(response1['Automated readability index'].min()),
 						"valueMax": float(response1['Automated readability index'].max()),
 						"description": 'TEST' 
