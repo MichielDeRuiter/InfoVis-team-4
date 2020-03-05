@@ -18,7 +18,7 @@ export default class ServerAPI{
     }
 
     public getData(callback): Object {
-    	d3.json(Configuration.get().fask_server_url, callback)
+    	d3.json("http://127.0.0.1:5000/main", callback)
     }
 
 }

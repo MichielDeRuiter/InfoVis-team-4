@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 from flask_cors import cross_origin
 from flask_socketio import SocketIO
 import pandas as pd
@@ -367,6 +367,14 @@ def vis2():
 @app.route('/vis3')
 def vis3():
     return render_template('vis3.html')
+
+@app.route('/vis4')
+def vis4():
+    return render_template('vis4.html', name='leagueoflegends,soccer')
+
+@app.route('/data_the_avengers.csv')
+def favicon():
+    return redirect(url_for('static', filename='csv/data_the_avengers.csv'))
 
 @app.route('/plot')
 def plot():
