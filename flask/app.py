@@ -286,21 +286,22 @@ def radar_screen():
 		response1['ARI_normalized']=(response1['Automated readability index']-response1['Automated readability index'].min())/(response1['Automated readability index'].max()-response1['Automated readability index'].min())
 		incoming_volume = len(response2)/(len(response1)+len(response2))
 		radar_view_response_searched = {
-			"subredditName": name,
-			"attributes": [
+			"group": name,
+			"axes": [
 				{
-					"name": "Sentiment",
+					"axis": "Automated readability index",
+					"value": float(response1['Automated readability index'].mean()),
+					"valueNormalized": float(response1['ARI_normalized'].mean()),
+					"valueMin": float(response1['Automated readability index'].min()),
+					"valueMax": float(response1['Automated readability index'].max()),
+					"description": 'TEST' 
+				},
+				{
+					"axis": "Sentiment",
 					"value": float(response1['LINK_SENTIMENT'].mean()),
 					"valueNormalized": float(response1['Link_normalized'].mean()),
 					"valueMin": float(response1['LINK_SENTIMENT'].min()),
 					"valueMax": float(response1['LINK_SENTIMENT'].max())
-				},
-				{
-					"name": "Readability Score",
-					"value": float(response1['Automated readability index'].mean()),
-					"valueNormalized": float(response1['ARI_normalized'].mean()),
-					"valueMin": float(response1['Automated readability index'].min()),
-					"valueMax": float(response1['Automated readability index'].max())
 				},
 				{
 					"name": "Volume Incoming Ratio",
