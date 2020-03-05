@@ -1,7 +1,10 @@
-import Network from './js/network';
+import Network3D from './js/network3D';
 import Timeline from './js/Timeline';
 import Radarplot from './js/Radarplot';
 
 new Radarplot()
-new Network()
 new Timeline()
+new Network3D()
+
+
+
