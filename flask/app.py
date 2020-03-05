@@ -304,21 +304,21 @@ def radar_screen():
 					"valueMax": float(response1['LINK_SENTIMENT'].max())
 				},
 				{
-					"name": "Volume Incoming Ratio",
+					"axis": "Volume Incoming Ratio",
 					"value": float(incoming_volume),
 					"valueNormalized": 0.45,
 					"valueMin": 0,
 					"valueMax": 1
 				},
 				{
-					"name": "Volume Outgoing Ratio",
+					"axis": "Volume Outgoing Ratio",
 					"value": float(1-incoming_volume),
 					"valueNormalized": 0.25000000001,  # this is on purpose to test UI rounding
 					"valueMin": 0,
 					"valueMax": 1
 				},
 				{
-					"name": "Total Volume to top 50 subreddits",
+					"axis": "Total Volume to top 50 subreddits",
 					"value": 12345678,
 					"valueNormalized": 0.43333333,
 					"valueMin": 0,
