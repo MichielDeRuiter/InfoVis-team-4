@@ -206,7 +206,7 @@ def main_screen():
 		treshold = v[int(top)]
 		start = time.process_time()
 		data2 = data[data.SOURCE_SUBREDDIT.isin(v.index[v.gt(treshold)])]
-	else: 
+	else:
 		data2 = data
 	if (fromDate != None and endDate != None):
 		response = data2.loc[data2['days'].between(int(fromDate), int(endDate))]
@@ -268,16 +268,16 @@ def main_screen_date_range():
 			status=200,
 			mimetype="application/json"
 		)
-	else: 
+	else:
 		return app.response_class(
 			response=json.dumps(filtered_main_menu_response),
 			status=200,
 			mimetype="application/json"
 		)
 
-def Convert(string): 
-    li = list(string.split(",")) 
-    return li 
+def Convert(string):
+    li = list(string.split(","))
+    return li
 """
 Returns data for the radar plot for a given 1 subreddit
 Mandatory parameters:
@@ -311,7 +311,7 @@ def radar_screen():
 						"value": float(response1['ARI_normalized'].mean()),
 						"valueMin": float(response1['Automated readability index'].min()),
 						"valueMax": float(response1['Automated readability index'].max()),
-						"description": 'TEST' 
+						"description": 'TEST'
 					},
 					{
 						"axis": "Sentiment",
@@ -334,11 +334,11 @@ def radar_screen():
 						"valueMin": 0,
 						"valueMax": 1
 					}
-					
+
 				]
 			}
 			nodes.append(radar_view_response_searched)
-		
+
 		return app.response_class(
 			response=json.dumps(nodes),
 			status=200,
@@ -396,9 +396,6 @@ def plot():
     layout = row(plot1, plot3)
     plots = json_item(layout, "myplot")
     return json.dumps(plots)
-
-
-
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
