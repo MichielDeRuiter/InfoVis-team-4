@@ -37,12 +37,12 @@ export default class Timeline extends BasicD3Visualization
 // append the svg object to the body of the page
 // append a 'group' element to 'svg'
 // moves the 'group' element to the top left margin
-    var svg = d3.select("body").append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-     .append("g")
-      .attr("transform", 
-          "translate(" + margin.left + "," + margin.top + ")");
+    // var svg = d3.select("body").append("svg")
+    //   .attr("width", width + margin.left + margin.right)
+    //   .attr("height", height + margin.top + margin.bottom)
+    //  .append("g")
+    //   .attr("transform", 
+    //       "translate(" + margin.left + "," + margin.top + ")");
 
 // get the data from csv
     // d3.csv("barchart.csv", function(error, data) {
@@ -61,7 +61,7 @@ export default class Timeline extends BasicD3Visualization
       y.domain([0, d3.max(data, function(d) { return d.volume; })]);
 
   // append the rectangles for the bar chart
-      svg.selectAll(".bar")
+      this.svg.selectAll(".bar")
           .data(data)
         .enter().append("rect")
           .attr("class", "bar")
@@ -71,16 +71,39 @@ export default class Timeline extends BasicD3Visualization
           .attr("height", function(d) { return height - y(d.volume); });
 
   // add the x Axis
-      svg.append("g")
+      this.svg.append("g")
           .attr("transform", "translate(0," + height + ")")
           .call(d3.axisBottom(x));
+          //#######
+          
+          // .selectAll("text")
+          //     .style("text-anchor", "end")
+          //     .attr("dx", "-.8em")
+          //     .attr("dy", "-.55em")
+          //     .attr("transform", "rotate(-90)" );
 
   // add the y Axis
-      svg.append("g")
+      this.svg.append("g")
           .call(d3.axisLeft(y));
 
+         //##############
+        //  .append("text")
+        //     .attr("transform", "rotate(-90)")
+        //     .attr("y", 6)
+        //     .attr("dy", ".71em")
+        //     .style("text-anchor", "end")
+        //     .text("Value ($)");
+
+
+
     });
+
+
+
  //######################################    
+
+
+
 
   }
 }
