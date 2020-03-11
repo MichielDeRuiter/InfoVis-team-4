@@ -382,6 +382,14 @@ def vis2():
 def vis3():
     return render_template('vis3.html')
 
+@app.route('/vis4')
+def vis4():
+    return render_template('vis4.html', name='leagueoflegends,soccer')
+
+@app.route('/data_the_avengers.csv')
+def favicon():
+    return redirect(url_for('static', filename='csv/data_the_avengers.csv'))
+
 @app.route('/plot')
 def plot():
     plot1 = compare_plot.create_pie_out(data)
