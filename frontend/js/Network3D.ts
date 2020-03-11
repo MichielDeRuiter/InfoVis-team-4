@@ -1,5 +1,7 @@
-import data from './network/reddit.json'
-import ForceGraph3D from './network/assets/3d-force-graph.js';
+//mock dataset
+import data from './network3D/reddit.json'
+//the library we use for the points visualization
+import ForceGraph3D from './network3D/3d-force-graph.js';
 
 
 export default class Network3D
@@ -10,7 +12,6 @@ export default class Network3D
 		const Graph = ForceGraph3D()
 		(document.getElementById("network"));
 		Graph.resetProps();
-
 
 		Graph
 			.cooldownTicks(200)
