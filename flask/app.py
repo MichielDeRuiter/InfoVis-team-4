@@ -23,7 +23,7 @@ socketio = SocketIO(app)
 #data = pd.read_csv('../data/reddit_total.csv')
 #data_50 = pd.read_csv('../../data/reddit_total_50.csv')
 data = pd.read_csv('../data/reddit_total_400.csv')
-data_days = data.days.value_counts()
+data_days = data.groupby('days').size().to_frame()
 
 
 main_menu_response = {
@@ -234,6 +234,27 @@ def main_screen():
 			status=200,
 			mimetype="application/json"
 		)
+		
+@app.route("/maintotal", methods=['GET', 'POST'])
+@cross_origin()
+def main_screen_total():
+	fromDate, endDate = None, None
+	if 'fromDate' in request.args:
+		fromDate = request.args['fromDate']
+	else:
+		fromDate = 0
+	if 'endDate' in request.args:
+		endDate = request.args['endDate']
+	else:
+		endDate = 1216
+	if (fromDate != None and endDate != None):
+		response = data_days[fromDate:endDate]
+		main_menu_response_filtered = []
+		return app.response_class(
+				response=json.dumps(main_menu_response_filtered),
+				status=200,
+				mimetype="application/json"
+			)
 
 """
 Searches for a subreddit with given name (future also fulltext search on attributes and description)
