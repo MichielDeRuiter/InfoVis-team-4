@@ -5,6 +5,3 @@ import Radarplot from './js/Radarplot';
 new Radarplot()
 new Timeline()
 new Network3D()
-
-
-
