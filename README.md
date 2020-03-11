@@ -81,4 +81,23 @@ https://www.reddit.com/comments/commentIDhere/.json
 
 ## Week 6
 
+### Meeting 11/03
+
+* Progress was fine
+* Having a complete demo ready for next week
+* Prepare some guidance for the user
+* Use an appropiate color scheeme
+* Prepare the user stories
+* Add feedback actions, like zoom in, hightlight selected nodes etc
+* Check the app for possible delays
+* Bar charts needs to be refined and integrated
+* Final presentation, report and video content was discussed
+	* motivations
+	* how our vizes are different from a regular graph
+	* identify passive elements (e.g. background) and active elements (e.g nodes, seach bar)
+	* justify color use, element positions, font used, etc.
+	* what are the findings of our vizes
+	* what we have archived
+	* how components communicate with each other
+
 ## Week 7
