@@ -8,11 +8,6 @@
  * to allow for addition/removal of visualization components via tweaking configuration parameters.
  *
  **/
-
-
-
-
-
 var RadarChart = {
   draw: function(id, data, options) {
 
