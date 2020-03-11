@@ -23,7 +23,7 @@ socketio = SocketIO(app)
 #data = pd.read_csv('../data/reddit_total.csv')
 #data_50 = pd.read_csv('../../data/reddit_total_50.csv')
 data = pd.read_csv('../data/reddit_total_400.csv')
-data_days = data.groupby('days').size().to_frame()
+data_days = data.groupby('days').size().to_frame('volume')
 
 
 main_menu_response = {
@@ -240,16 +240,20 @@ def main_screen():
 def main_screen_total():
 	fromDate, endDate = None, None
 	if 'fromDate' in request.args:
-		fromDate = request.args['fromDate']
+		fromDate = int(request.args['fromDate'])
 	else:
 		fromDate = 0
 	if 'endDate' in request.args:
-		endDate = request.args['endDate']
+		endDate = int(request.args['endDate'])
 	else:
 		endDate = 1216
 	if (fromDate != None and endDate != None):
-		response = data_days[fromDate:endDate]
+		days = []
+		response = data_days[fromDate:endDate].values
 		main_menu_response_filtered = []
+		for i in range(fromDate, endDate):
+			days.append({i:int(response[(i-fromDate)][0])})
+		main_menu_response_filtered = {"timeSeries":days}
 		return app.response_class(
 				response=json.dumps(main_menu_response_filtered),
 				status=200,
