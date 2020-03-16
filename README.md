@@ -1,3 +1,7 @@
+# Important Links:
+
+[OverLeaf final report](https://www.overleaf.com/4413719886yyjwcspjcnhw)
+
 # Planning and logs per week
 
 ## Week 2
@@ -76,5 +80,24 @@ https://www.reddit.com/comments/commentIDhere/.json
 * Fix the bar chart with time line soon
 
 ## Week 6
+
+### Meeting 11/03
+
+* Progress was fine
+* Having a complete demo ready for next week
+* Prepare some guidance for the user
+* Use an appropriate color scheme
+* Prepare the user stories
+* Add feedback actions, like zoom in, highlight selected nodes etc
+* Check the app for possible delays
+* Bar charts need to be refined and integrated
+* Final presentation, report, and video content was discussed
+	* motivations
+	* how our vizes are different from a regular graph
+	* identify passive elements (e.g. background) and active elements (e.g nodes, seach bar)
+	* justify color use, element positions, font used, etc.
+	* what are the findings of our vizes
+	* what we have archived
+	* how components communicate with each other
 
 ## Week 7

@@ -25,6 +25,8 @@
 	  background-color: lightblue;
 	  position: absolute;
 	  bottom: 0px;
+
+	  
 	}
 
 	#radarplot {
@@ -36,7 +38,7 @@
 	  left: 40px;
 	  z-index: 5;
 	}
-
+	.bar { fill: steelblue; }
 </style>
 
 <body>
@@ -44,8 +46,14 @@
   <!-- Create a div where the graph will take place -->
   <div id="timeline"></div>
   <div id="network"></div>
-  <div id="radarplot"></div>
-  <iframe src="//localhost:5000" style="border:none;"></iframe>
+  <div id="radarplot">
+  	<iframe src="//localhost:5000/vis4" style="
+  		border:none;
+  		position: relative;
+  		width: 100%;
+  		height: 100%;
+  	"></iframe>
+  </div>
 
 </body>
  <script src="./index.js"></script>
