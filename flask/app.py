@@ -25,6 +25,9 @@ socketio = SocketIO(app)
 data = pd.read_csv('../data/reddit_total_400.csv')
 data_days = data.groupby('days').size().to_frame()
 
+with open('../data/sentiment_pairs.json', 'r') as file:
+    sen_pairs = json.load(file)
+
 
 main_menu_response = {
     "nodes": [
@@ -194,11 +197,11 @@ def main_screen():
 	import time
 	fromDate, endDate = None, None
 	if 'fromDate' in request.args:
-		fromDate = request.args['fromDate']
+		fromDate = int(request.args['fromDate'])
 	else:
 		fromDate = 0
 	if 'endDate' in request.args:
-		endDate = request.args['endDate']
+		endDate = int(request.args['endDate'])
 	else:
 		endDate = 1216
 	if 'top' in request.args:
@@ -210,11 +213,10 @@ def main_screen():
 	else:
 		data2 = data
 	if (fromDate != None and endDate != None):
-		response = data2.loc[data2['days'].between(int(fromDate), int(endDate))]
+		response = data2.loc[data2['days'].between(fromDate, endDate)]
 		total_value = len(response)
 		uniques = response.SOURCE_SUBREDDIT.unique()
 		link_pairs_temp = response.groupby(['SOURCE_SUBREDDIT', 'TARGET_SUBREDDIT']).size().reset_index()
-		#link_pairs_temp.to_csv('temp.csv')
 		link_pairs_temp = link_pairs_temp.loc[link_pairs_temp[0].ge(5)]
 		link_pairs = link_pairs_temp.values.tolist()
 		nodes = []
@@ -225,7 +227,7 @@ def main_screen():
 			links.append({
 			"fromSubredditName": link[0],
             "toSubredditName": link[1],
-            "sentiment": 0.3,
+            "sentiment": sen_pairs.get(link[0]+link[1], 0.5),
             "volume": link[2]
 			})
 		main_menu_response_filtered = {"nodes":nodes,"links":links}
@@ -267,9 +269,8 @@ example: http://localhost:5000/search?name=soccer
 def main_screen_date_range():
 	if 'name' in request.args:
 		name = request.args['name']
-		response = data.loc[data['SOURCE_SUBREDDIT'] == name]
+		response = data.query('SOURCE_SUBREDDIT == @name')
 		link_pairs = response.groupby(['SOURCE_SUBREDDIT', 'TARGET_SUBREDDIT']).size().reset_index().values.tolist()
-		print(link_pairs)
 		nodes = []
 		links = []
 		for link in link_pairs:
@@ -280,10 +281,9 @@ def main_screen_date_range():
 			links.append({
 				"fromSubredditName": link[0],
 				"toSubredditName": link[1],
-				"sentiment": 0.3,
+				"sentiment": response.query('SOURCE_SUBREDDIT == @link[0] and TARGET_SUBREDDIT == @link[1]')['LINK_SENTIMENT'].mean(),
 				"volume": link[2]
 			})
-		print(nodes)
 		filtered_main_menu_response_searched = {"nodes":nodes,"links":links}
 		return app.response_class(
 			response=json.dumps(filtered_main_menu_response_searched),
