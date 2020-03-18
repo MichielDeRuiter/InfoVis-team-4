@@ -22,6 +22,10 @@ socketio = SocketIO(app)
 #data_body = pd.read_csv('../reddit_raw_data/reddit_body_props_seperated.csv')
 #data = pd.read_csv('../data/reddit_total.csv')
 #data_50 = pd.read_csv('../../data/reddit_total_50.csv')
+
+pd.options.mode.chained_assignment = None  # default='warn'
+
+
 data = pd.read_csv('../data/reddit_total_400.csv')
 data['LINK_SENTIMENT'][data['LINK_SENTIMENT'] < -0] = 0
 data_days = data.groupby('days').size().to_frame()
@@ -342,7 +346,6 @@ def radar_screen():
 		name = name.lower()
 		response1 = data.loc[data['SOURCE_SUBREDDIT'] == name][rader_columns]
 		response2 = data.loc[data['TARGET_SUBREDDIT'] == name]['TARGET_SUBREDDIT']
-		response1['Link_normalized']=(response1['LINK_SENTIMENT']-response1['LINK_SENTIMENT'].min())/(response1['LINK_SENTIMENT'].max()-response1['LINK_SENTIMENT'].min())
 		response1['ARI_normalized']=(response1['Automated readability index']-response1['Automated readability index'].min())/(response1['Automated readability index'].max()-response1['Automated readability index'].min())
 		incoming_volume = len(response2)/(len(response1)+len(response2))
 		radar_view_response_searched = {
@@ -357,7 +360,7 @@ def radar_screen():
 				},
 				{
 					"axis": "Sentiment",
-					"value": float(response1['Link_normalized'].mean()),
+					"value": response1['LINK_SENTIMENT'].sum()/len(response1['LINK_SENTIMENT']),
 					"valueMin": 0,
 					"valueMax": 1,
 					"description": 'Sentiment of given subreddit' 
