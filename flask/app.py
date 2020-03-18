@@ -28,6 +28,17 @@ data_days = data.groupby('days').size().to_frame()
 with open('../data/sentiment_pairs.json', 'r') as file:
     sen_pairs = json.load(file)
 
+with open('../data/dict_amount.json', 'r') as file:
+    dict_amount = json.load(file)
+	
+with open('../data/dict_sentiment.json', 'r') as file:
+    dict_sentiment = json.load(file)
+
+dict_amount_df = pd.DataFrame(dict_amount)
+
+dict_sentiment_df = pd.DataFrame(dict_sentiment)
+
+
 
 main_menu_response = {
     "nodes": [
@@ -214,7 +225,8 @@ def main_screen():
 		data2 = data
 	if (fromDate != None and endDate != None):
 		response = data2.loc[data2['days'].between(fromDate, endDate)]
-		total_value = len(response)
+		sent_dt = dict_sentiment_df.iloc[:, fromDate:endDate].sum(axis=1)
+		amount_dt = dict_amount_df.iloc[:, fromDate:endDate].sum(axis=1)
 		uniques = response.SOURCE_SUBREDDIT.unique()
 		link_pairs_temp = response.groupby(['SOURCE_SUBREDDIT', 'TARGET_SUBREDDIT']).size().reset_index()
 		link_pairs_temp = link_pairs_temp.loc[link_pairs_temp[0].ge(5)]
@@ -227,7 +239,7 @@ def main_screen():
 			links.append({
 			"fromSubredditName": link[0],
             "toSubredditName": link[1],
-            "sentiment": sen_pairs.get(link[0]+link[1], 0.5),
+            "sentiment": sent_dt.get(link[0]+link[1])/amount_dt.get(link[0]+link[1]),
             "volume": link[2]
 			})
 		main_menu_response_filtered = {"nodes":nodes,"links":links}
@@ -337,7 +349,7 @@ def radar_screen():
 					},
 					{
 						"axis": "Sentiment",
-						"value": float(response1['LINK_SENTIMENT'].mean()),
+						"value": float(response1['Link_normalized'].mean()),
 						"valueNormalized": float(response1['Link_normalized'].mean()),
 						"valueMin": float(response1['LINK_SENTIMENT'].min()),
 						"valueMax": float(response1['LINK_SENTIMENT'].max())
