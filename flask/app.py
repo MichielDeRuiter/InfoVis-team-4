@@ -218,7 +218,7 @@ def main_screen():
 	if 'endDate' in request.args:
 		endDate = int(request.args['endDate'])
 	else:
-		endDate = 1216
+		endDate = 1217
 	if 'top' in request.args:
 		top = request.args['top']
 		v = data.SOURCE_SUBREDDIT.value_counts()
@@ -227,7 +227,7 @@ def main_screen():
 		data2 = data[data.SOURCE_SUBREDDIT.isin(v.index[v.gt(treshold)])]
 	else:
 		data2 = data
-	if (fromDate == 0 and endDate == 1216):
+	if (fromDate == 0 and endDate == 1217):
 		response = data2.loc[data2['days'].between(fromDate, endDate)]
 		uniques = response.SOURCE_SUBREDDIT.unique()
 		link_pairs_temp = response.groupby(['SOURCE_SUBREDDIT', 'TARGET_SUBREDDIT']).size().reset_index()
@@ -277,10 +277,10 @@ def main_screen_total():
 	if 'endDate' in request.args:
 		endDate = int(request.args['endDate'])
 	else:
-		endDate = 1216
+		endDate = 1217
 	if (fromDate != None and endDate != None):
 		response = data_days[fromDate:endDate]
-		main_menu_response_filtered = []
+		main_menu_response_filtered = response.to_dict()[0]
 		return app.response_class(
 				response=json.dumps(main_menu_response_filtered),
 				status=200,
