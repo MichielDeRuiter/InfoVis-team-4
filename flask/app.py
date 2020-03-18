@@ -1,17 +1,15 @@
-import os
-from flask import Flask, render_template, request
+from flask import Flask, jsonify, render_template, request, Response
 from flask_cors import cross_origin
 from flask_socketio import SocketIO
-import pandas as pd
-import compare_plot
-from flask import jsonify
-from flask import Response
-
 
 from bokeh.layouts import row, column, widgetbox
 from bokeh.embed import json_item
 
+import compare_plot
 import json
+import os
+import pandas as pd
+import random
 import time
 
 from random import randint
@@ -25,6 +23,7 @@ socketio = SocketIO(app)
 #data = pd.read_csv('../data/reddit_total.csv')
 #data_50 = pd.read_csv('../../data/reddit_total_50.csv')
 data = pd.read_csv('../data/reddit_total_400.csv')
+data['LINK_SENTIMENT'][data['LINK_SENTIMENT'] < -0] = 0
 data_days = data.groupby('days').size().to_frame()
 
 with open('../data/sentiment_pairs.json', 'r') as file:
@@ -268,11 +267,11 @@ def main_screen():
 def main_screen_total():
 	fromDate, endDate = None, None
 	if 'fromDate' in request.args:
-		fromDate = request.args['fromDate']
+		fromDate = int(request.args['fromDate'])
 	else:
 		fromDate = 0
 	if 'endDate' in request.args:
-		endDate = request.args['endDate']
+		endDate = int(request.args['endDate'])
 	else:
 		endDate = 1216
 	if (fromDate != None and endDate != None):
@@ -295,33 +294,30 @@ example: http://localhost:5000/search?name=soccer
 def main_screen_date_range():
 	if 'name' in request.args:
 		name = request.args['name']
-		response = data.query('SOURCE_SUBREDDIT == @name')
-		link_pairs = response.groupby(['SOURCE_SUBREDDIT', 'TARGET_SUBREDDIT']).size().reset_index().values.tolist()
-		nodes = []
-		links = []
-		for link in link_pairs:
-			nodes.append({
-				"subredditName": link[1],
-				"subscriberCount":randint(0,100000)
-			})
-			links.append({
-				"fromSubredditName": link[0],
-				"toSubredditName": link[1],
-				"sentiment": response.query('SOURCE_SUBREDDIT == @link[0] and TARGET_SUBREDDIT == @link[1]')['LINK_SENTIMENT'].mean(),
-				"volume": link[2]
-			})
-		filtered_main_menu_response_searched = {"nodes":nodes,"links":links}
-		return app.response_class(
-			response=json.dumps(filtered_main_menu_response_searched),
-			status=200,
-			mimetype="application/json"
-		)
-	else: 
-		return app.response_class(
-			response=json.dumps(filtered_main_menu_response),
-			status=200,
-			mimetype="application/json"
-		)
+	else:
+		name = 'soccer'
+	response = data.query('SOURCE_SUBREDDIT == @name')
+	link_pairs = response.groupby(['SOURCE_SUBREDDIT', 'TARGET_SUBREDDIT']).size().reset_index().values.tolist()
+	nodes = []
+	links = []
+	for link in link_pairs:
+		nodes.append({
+			"subredditName": link[1],
+			"subscriberCount":randint(0,100000)
+		})
+		sent = response.query('SOURCE_SUBREDDIT == @link[0] and TARGET_SUBREDDIT == @link[1]')['LINK_SENTIMENT']
+		links.append({
+			"fromSubredditName": link[0],
+			"toSubredditName": link[1],
+			"sentiment": sent.sum()/len(sent),
+			"volume": link[2]
+		})
+	filtered_main_menu_response_searched = {"nodes":nodes,"links":links}
+	return app.response_class(
+		response=json.dumps(filtered_main_menu_response_searched),
+		status=200,
+		mimetype="application/json"
+	)
 
 def Convert(string): 
     li = list(string.split(",")) 
@@ -338,68 +334,64 @@ def radar_screen():
 	rader_columns=['SOURCE_SUBREDDIT', 'LINK_SENTIMENT', 'Automated readability index']
 	if 'name' in request.args:
 		list = request.args['name']
-		list = Convert(list)
-		#name = name[0]
-		#name = name.lower()
-		nodes = []
-		for name in list:
-			name = name.lower()
-			print(name)
-			response1 = data.loc[data['SOURCE_SUBREDDIT'] == name][rader_columns]
-			response2 = data.loc[data['TARGET_SUBREDDIT'] == name]['TARGET_SUBREDDIT']
-			response1['Link_normalized']=(response1['LINK_SENTIMENT']-response1['LINK_SENTIMENT'].min())/(response1['LINK_SENTIMENT'].max()-response1['LINK_SENTIMENT'].min())
-			response1['ARI_normalized']=(response1['Automated readability index']-response1['Automated readability index'].min())/(response1['Automated readability index'].max()-response1['Automated readability index'].min())
-			incoming_volume = len(response2)/(len(response1)+len(response2))
-			radar_view_response_searched = {
-				"group": name,
-				"axes": [
-					{
-						"axis": "Automated readability index",
-						"valueOLD": float(response1['Automated readability index'].mean()),
-						"value": float(response1['ARI_normalized'].mean()),
-						"valueMin": float(response1['Automated readability index'].min()),
-						"valueMax": float(response1['Automated readability index'].max()),
-						"description": 'TEST' 
-					},
-					{
-						"axis": "Sentiment",
-						"value": float(response1['Link_normalized'].mean()),
-						"valueNormalized": float(response1['Link_normalized'].mean()),
-						"valueMin": float(response1['LINK_SENTIMENT'].min()),
-						"valueMax": float(response1['LINK_SENTIMENT'].max())
-					},
-					{
-						"axis": "Volume Incoming Ratio",
-						"value": float(incoming_volume),
-						"valueNormalized": 0.45,
-						"valueMin": 0,
-						"valueMax": 1
-					},
-					{
-						"axis": "Volume Outgoing Ratio",
-						"value": float(1-incoming_volume),
-						"valueNormalized": 0.25000000001,  # this is on purpose to test UI rounding
-						"valueMin": 0,
-						"valueMax": 1
-					}
-					
-				]
-			}
-			nodes.append(radar_view_response_searched)
-		
-		return app.response_class(
-			response=json.dumps(nodes),
-			status=200,
-			mimetype="application/json"
-		)
-	else: 
-		return app.response_class(
-			response=json.dumps(radar_view_response),
-			status=200,
-			mimetype="application/json"
-		)
-
-
+	else:
+		list = 'soccer'
+	list = Convert(list)
+	nodes = []
+	for name in list:
+		name = name.lower()
+		response1 = data.loc[data['SOURCE_SUBREDDIT'] == name][rader_columns]
+		response2 = data.loc[data['TARGET_SUBREDDIT'] == name]['TARGET_SUBREDDIT']
+		response1['Link_normalized']=(response1['LINK_SENTIMENT']-response1['LINK_SENTIMENT'].min())/(response1['LINK_SENTIMENT'].max()-response1['LINK_SENTIMENT'].min())
+		response1['ARI_normalized']=(response1['Automated readability index']-response1['Automated readability index'].min())/(response1['Automated readability index'].max()-response1['Automated readability index'].min())
+		incoming_volume = len(response2)/(len(response1)+len(response2))
+		radar_view_response_searched = {
+			"group": name,
+			"axes": [
+				{
+					"axis": "Automated readability index",
+					"value": float(response1['ARI_normalized'].mean()),
+					"valueMin": float(response1['Automated readability index'].min()),
+					"valueMax": float(response1['Automated readability index'].max()),
+					"description": 'Automated readability index' 
+				},
+				{
+					"axis": "Sentiment",
+					"value": float(response1['Link_normalized'].mean()),
+					"valueMin": 0,
+					"valueMax": 1,
+					"description": 'Sentiment of given subreddit' 
+				},
+				{
+					"axis": "Volume Incoming Ratio",
+					"value": float(incoming_volume),
+					"valueMin": 0,
+					"valueMax": 1,
+					"description": 'Incoming value compared to outgoing volume' 
+				},
+				{
+					"axis": "Volume Outgoing Ratio",
+					"value": float(1-incoming_volume),
+					"valueMin": 0,
+					"valueMax": 1,
+					"description": 'Outgoing value compared to incoming volume' 
+				},
+				{
+					"axis": "Average awards",
+					"value": random.uniform(0,0.1),
+					"valueMin": 0,
+					"valueMax": 0.1,
+					"description": 'Average awards per link' 
+				}
+			]
+		}
+		nodes.append(radar_view_response_searched)
+	
+	return app.response_class(
+		response=json.dumps(nodes),
+		status=200,
+		mimetype="application/json"
+	)
 
 @app.route("/example", methods=['GET', 'POST'])
 def example():
