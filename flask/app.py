@@ -12,8 +12,10 @@ from bokeh.layouts import row, column, widgetbox
 from bokeh.embed import json_item
 
 import json
+import time
 
 from random import randint
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'kjhlfsddkjhlsdakjhl'
 socketio = SocketIO(app)
@@ -205,7 +207,6 @@ example: http://localhost:5000/main?fromDate=20&endDate=800
 @app.route("/main", methods=['GET', 'POST'])
 @cross_origin()
 def main_screen():
-	import time
 	fromDate, endDate = None, None
 	if 'fromDate' in request.args:
 		fromDate = int(request.args['fromDate'])
@@ -223,7 +224,25 @@ def main_screen():
 		data2 = data[data.SOURCE_SUBREDDIT.isin(v.index[v.gt(treshold)])]
 	else:
 		data2 = data
-	if (fromDate != None and endDate != None):
+	if (fromDate == 0 and endDate == 1216):
+		response = data2.loc[data2['days'].between(fromDate, endDate)]
+		uniques = response.SOURCE_SUBREDDIT.unique()
+		link_pairs_temp = response.groupby(['SOURCE_SUBREDDIT', 'TARGET_SUBREDDIT']).size().reset_index()
+		link_pairs_temp = link_pairs_temp.loc[link_pairs_temp[0].ge(5)]
+		link_pairs = link_pairs_temp.values.tolist()
+		nodes = [{"subredditName":reddit, "subscriberCount":randint(0,100000)} for reddit in uniques]
+		links = [{	"fromSubredditName": link[0],
+					"toSubredditName": link[1],
+					"sentiment": sen_pairs.get(link[0]+link[1], 0.5),
+					"volume": link[2]} 
+				for link in link_pairs]
+		main_menu_response_filtered = {"nodes":nodes,"links":links}
+		return app.response_class(
+			response=json.dumps(main_menu_response_filtered),
+			status=200,
+			mimetype="application/json"
+		)
+	else:
 		response = data2.loc[data2['days'].between(fromDate, endDate)]
 		sent_dt = dict_sentiment_df.iloc[:, fromDate:endDate].sum(axis=1)
 		amount_dt = dict_amount_df.iloc[:, fromDate:endDate].sum(axis=1)
@@ -231,17 +250,12 @@ def main_screen():
 		link_pairs_temp = response.groupby(['SOURCE_SUBREDDIT', 'TARGET_SUBREDDIT']).size().reset_index()
 		link_pairs_temp = link_pairs_temp.loc[link_pairs_temp[0].ge(5)]
 		link_pairs = link_pairs_temp.values.tolist()
-		nodes = []
-		links = []
-		for reddit in uniques:
-			nodes.append({"subredditName":reddit, "subscriberCount":randint(0,100000)})
-		for link in link_pairs:
-			links.append({
-			"fromSubredditName": link[0],
-            "toSubredditName": link[1],
-            "sentiment": sent_dt.get(link[0]+link[1])/amount_dt.get(link[0]+link[1]),
-            "volume": link[2]
-			})
+		nodes = [{"subredditName":reddit, "subscriberCount":randint(0,100000)} for reddit in uniques]
+		links = [{	"fromSubredditName": link[0],
+					"toSubredditName": link[1],
+					"sentiment": sent_dt.get(link[0]+link[1])/amount_dt.get(link[0]+link[1]),
+					"volume": link[2]} 
+				for link in link_pairs]
 		main_menu_response_filtered = {"nodes":nodes,"links":links}
 		return app.response_class(
 			response=json.dumps(main_menu_response_filtered),
