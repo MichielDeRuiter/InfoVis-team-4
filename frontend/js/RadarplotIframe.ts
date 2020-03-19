@@ -35,7 +35,7 @@ export default class RadarplotIframe
 		document.body.clientHeight
 		this.container.style.left = position.x
 		this.container.style.top = position.y
-		this.ifrm.contentWindow.postMessage('Hello to iframe from parent!', 'http://localhost');
+		this.ifrm.contentWindow.postMessage('Hello to iframe from parent!', 'http://localhost:5000');
 
 
 		this.container.className = "container-visible";
