@@ -12,7 +12,7 @@ function radarDraw(scope, element) {
 
     console.log(csv)
     d3.json("http://127.0.0.1:5000/radar?name=badpolitics,politics,shitredditsays,shitpoliticssays", function(json_data){
-          console.log(json_data)
+          //console.log(json_data)
           RadarChart.draw(element[0], json_data, config);
     })
 
@@ -52,7 +52,16 @@ function radarDraw(scope, element) {
       });
     });
 
-    console.log(data)
     return data;
   }
+
+
+
+  function receiveMessage(event) {
+    console.log(event)
+    if (event.origin !== "http://example.org:8080")
+      return;
+  }
+
+  window.addEventListener("message", receiveMessage, false);
 }

@@ -6,34 +6,70 @@ import ForceGraph3D from './network3D/3d-force-graph.js';
 
 export default class Network3D
 {
-  	constructor()
-  	{
-
-		const Graph = ForceGraph3D()
-		(document.getElementById("network"));
-		Graph.resetProps();
-
+	constructor(eventHandler)
+	{
+		this.eventHandler = eventHandler;
+		this.eventHandler.subscribe_network(this)
+		
+		const Graph = ForceGraph3D()(document.getElementById("network"));
+		//Graph.resetProps();
+		let nodes = {};
+		data.nodes.map((node)=>{return nodes[node.id] = true});
 		Graph
 			.cooldownTicks(200)
 			.nodeLabel('id')
 			.nodeAutoColorBy('subscriberCount')
 			.nodeVal('subscriberCount')
 			.nodeRelSize(0.125)
-			.cooldownTime(5000000)
+			//.cooldownTime(5000000)
+			.forceEngine('ngraph')
+			.linkVisibility((link)=>{
+				//console.log(nodes)
+				return  nodes[link.source]
+			})
 			.backgroundColor("#333333")
-			.linkWidth((link)=>{return link.value / 10;})
+			.linkWidth((link)=>{return link.value / 20;})
 			//.linkColor((link)=>{return link.sentiment > 0.5 ? "#33ff55" : "#ff3355"})
 			.linkColor((link)=>{return Math.random() > 0.5 ? "#33ff55" : "#ff3355"})
-			.forceEngine('ngraph')
-			.d3VelocityDecay(1)
 			.onNodeHover(
-				(node)=>{if(node) {d3.json("http://127.0.0.1:5000/radar?=" + node.id, console.log);console.log(node.id)}
+				(node)=>{
+
+					let position = {
+						x : document.getElementsByClassName("scene-tooltip")[0].style.left,
+						y : document.getElementsByClassName("scene-tooltip")[0].style.top
+					}
+
+					if(node){
+						//d3.json("http://127.0.0.1:5000/radar?=" + node.id, console.log);
+						//console.log(node.id)
+						console.log(position)
+						this.on_hover(node.id, position)
+					} else {
+						this.on_hover_ends()
+					}
 			})
 			.nodeLabel(
-				(node)=>{if(node) {d3.json("http://127.0.0.1:5000/radar?=" + node.id, console.log); return node.id + " : " + node.subscriberCount}
+				(node)=>{
+					console.log(node)
+
+					return node.id
+					//if(node){
+						//d3.json("http://127.0.0.1:5000/radar?=" + node.id, console.log);
+						//return node.id + " : " + node.subscriberCount
+					//}
 			})
+
 			.width(document.getElementById("network").offsetWidth)
 			.height(document.getElementById("network").offsetHeight)
 			.graphData(data);
-  	}
+	}
+
+	on_hover(node, position){
+		this.eventHandler.on_network_over(node, position)
+	}
+
+	on_hover_ends(){
+		this.eventHandler.on_network_over_ends()
+	}
+
 }
