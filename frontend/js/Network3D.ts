@@ -11,11 +11,11 @@ export default class Network3D
 		this.eventHandler = eventHandler;
 		this.eventHandler.subscribe_network(this)
 		
-		const Graph = ForceGraph3D()(document.getElementById("network"));
+		this.Graph = ForceGraph3D()(document.getElementById("network"));
 		//Graph.resetProps();
 		let nodes = {};
 		data.nodes.map((node)=>{return nodes[node.id] = true});
-		Graph
+		this.Graph
 			.cooldownTicks(200)
 			.nodeLabel('id')
 			.nodeAutoColorBy('subscriberCount')
@@ -72,4 +72,9 @@ export default class Network3D
 		this.eventHandler.on_network_over_ends()
 	}
 
+	on_resize(){
+
+		this.Graph.width(document.getElementById("network").offsetWidth)
+		this.Graph.height(document.getElementById("network").offsetHeight)
+	}
 }

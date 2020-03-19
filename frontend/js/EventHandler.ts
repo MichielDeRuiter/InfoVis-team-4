@@ -9,6 +9,9 @@ export default abstract class EventHandler {
         this.network = network;
         this.radarplot = radarplot;
         this.timeline = timeline;
+
+        window.addEventListener("resize", this.on_resize.bind(this));
+
     }
 
     subscribe_network(network) : void {
@@ -50,5 +53,12 @@ export default abstract class EventHandler {
 
     on_network_over_ends(asd): void{
         this.radarplot.on_node_unselect()
+    }
+
+    on_resize(event):void {
+    console.log('asd')
+        this.network.on_resize(event)
+        this.radarplot.on_resize(event)
+        this.timeline.on_resize(event)
     }
 }
