@@ -47,7 +47,6 @@ export default abstract class EventHandler {
     }
 
     on_network_over(node_name, position): void{
-    console.log(node_name, position)
         this.radarplot.on_node_select(node_name, position);
     }
 

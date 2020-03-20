@@ -30,12 +30,12 @@ export default class RadarplotIframe
 		w = Math.round(DPR * w);
 		//h = Math.round(DPR * h);
 
-		console.log(node,h- (position.y).split('p')[0], (position.y).split('p')[0], h )
+		//console.log(node,h- (position.y).split('p')[0], (position.y).split('p')[0], h )
 		this.container = document.getElementById('radarplot');
 		document.body.clientHeight
 		this.container.style.left = position.x
 		this.container.style.top = position.y
-		this.ifrm.contentWindow.postMessage('Hello to iframe from parent!', 'http://localhost:5000');
+		this.ifrm.contentWindow.postMessage(node, 'http://localhost:5000');
 
 
 		this.container.className = "container-visible";
