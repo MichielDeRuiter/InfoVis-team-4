@@ -21,4 +21,11 @@ export default class ServerAPI{
     	d3.json("http://127.0.0.1:5000/main", callback)
     }
 
+
+    public getDataBetweenDates(d0, d1, callback): Object {
+        d3.json("http://127.0.0.1:5000/main?fromDate=" + d0 + "&endDate=" + d1, callback)
+    }
+
+
+    
 }

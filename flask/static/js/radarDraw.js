@@ -10,7 +10,6 @@ function radarDraw(scope, element) {
 
   function get_data_and_draw(names) {
     d3.json("http://127.0.0.1:5000/radar?name=" + names, function(json_data){
-        console.log(json_data)
           RadarChart.draw(element[0], json_data, config);
     })
   }

@@ -1,7 +1,7 @@
 //mock dataset
-import data from './network3D/reddit.json'
 //the library we use for the points visualization
 import ForceGraph3D from './network3D/3d-force-graph.js';
+import ServerAPI from './ServerAPI';
 
 
 export default class Network3D
@@ -10,11 +10,26 @@ export default class Network3D
 	{
 		this.eventHandler = eventHandler;
 		this.eventHandler.subscribe_network(this)
-		console.log(data)
 		this.Graph = ForceGraph3D()(document.getElementById("network"));
 		//Graph.resetProps();
-		let nodes = {};
-		data.nodes.map((node)=>{return nodes[node.id] = true});
+
+
+
+		function lerpColor(a, b, amount) { 
+			//amount = Math.round(amount * 10) / 10
+			amount = ( amount - 0.5 ) * 2
+		    var ah = parseInt(a.replace(/#/g, ''), 16),
+		        ar = ah >> 16, ag = ah >> 8 & 0xff, ab = ah & 0xff,
+		        bh = parseInt(b.replace(/#/g, ''), 16),
+		        br = bh >> 16, bg = bh >> 8 & 0xff, bb = bh & 0xff,
+		        rr = ar + amount * (br - ar),
+		        rg = ag + amount * (bg - ag),
+		        rb = ab + amount * (bb - ab);
+
+		    return '#' + ((1 << 24) + (rr << 16) + (rg << 8) + rb | 0).toString(16).slice(1);
+		}
+
+
 		this.Graph
 			.cooldownTicks(200)
 			.nodeLabel('subredditName')
@@ -28,15 +43,12 @@ export default class Network3D
 
 
 			.nodeRelSize(0.125)
-			//.cooldownTime(5000000)
+			.cooldownTime(5000000)
 			.forceEngine('ngraph')
-			.linkVisibility((link)=>{
-				return  nodes[link.toSubredditName]
-			})
+
 			.backgroundColor("#333333")
-			.linkWidth((link)=>{return link.volume / 20;})
-			.linkColor((link)=>{return link.sentiment > 0.9 ? "#33ff55" : "#ff3355"})
-			//.linkColor((link)=>{return Math.random() > 0.5 ? "#33ff55" : "#ff3355"})
+			.linkWidth((link)=>{return link.volume / 20 + 1;})
+			.linkColor((link)=>{return lerpColor( "#ff4444" , "#44ff44", link.sentiment)})
 			.onNodeHover(
 				(node)=>{
 
@@ -48,8 +60,7 @@ export default class Network3D
 					if(node){
 						//d3.json("http://127.0.0.1:5000/radar?=" + node.id, console.log);
 						//console.log(node.id)
-						console.log(position)
-						this.on_hover(node.id, position)
+						this.on_hover(node.subredditName, position)
 					} else {
 						this.on_hover_ends()
 					}
@@ -58,7 +69,7 @@ export default class Network3D
 				(node)=>{
 					console.log(node)
 
-					return node.id
+					return node.subredditName
 					//if(node){
 						//d3.json("http://127.0.0.1:5000/radar?=" + node.id, console.log);
 						//return node.id + " : " + node.subscriberCount
@@ -70,7 +81,28 @@ export default class Network3D
 	}
 
 	update_network(data) {
+		//this.Graph.resetProps();
+		let nodes = {};
+		console.log(data)
+		data.nodes.map((node)=>{return nodes[node.subredditName] = true});
 		this.Graph.graphData(data);
+		this.Graph.linkVisibility((link)=>{
+			return nodes[link.toSubredditName]// && nodes[link.fromSubredditName]
+		})
+
+		let nodes_vis = {};
+		data.links.map((link)=>{
+			nodes_vis[link.toSubredditName] = true
+			nodes_vis[link.fromSubredditName] = true
+			return;
+		});
+		console.log(nodes_vis)
+		this.Graph.nodeVisibility((node)=>{
+			//return node.
+			//console.log(node)
+			return nodes_vis[node.subredditName]
+			//return true;
+		})
 	}
 
 
@@ -87,4 +119,11 @@ export default class Network3D
 		this.Graph.width(document.getElementById("network").offsetWidth)
 		this.Graph.height(document.getElementById("network").offsetHeight)
 	}
+
+    update_dates(date0, date1) {
+    	let ctx = this;
+		(ServerAPI.get()).getDataBetweenDates(date0, date1, function(data2) {
+    	    ctx.update_network(data2)
+    	});
+    }
 }

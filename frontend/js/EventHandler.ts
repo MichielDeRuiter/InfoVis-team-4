@@ -3,15 +3,15 @@ export default abstract class EventHandler {
     container: HTMLDivElement;
 
 
-    constructor(network: Object, radarplot: Object, timeline: Object) {
+    constructor(network: Object, radarplot: Object, timeline: Object, timeslider: Object) {
         this.name = name;
 
         this.network = network;
         this.radarplot = radarplot;
         this.timeline = timeline;
+        this.timeslider = timeslider;
 
         window.addEventListener("resize", this.on_resize.bind(this));
-
     }
 
     subscribe_network(network) : void {
@@ -24,6 +24,10 @@ export default abstract class EventHandler {
 
     subscribe_timeline(timeline) : void {
         this.timeline = timeline;
+    }
+
+    subscribe_timeslider(timeslider) : void {
+        this.timeslider = timeslider;
     }
 
     update_radarplot(): void{
@@ -44,6 +48,10 @@ export default abstract class EventHandler {
 
     on_radarplot_update(): void{
 
+    }
+
+    change_dates(date0, date1): void{
+        this.network.update_dates(date0, date1)
     }
 
     on_network_over(node_name, position): void{
