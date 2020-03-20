@@ -22,22 +22,11 @@
 
 <body class="container" ng-controller="MainCtrl as radar">
 
-  <!-- header -->
-  <header class="page-header">
-    <h1>D3 Radar Chart</h1> 
-    <p class="text-small">AngularJS application showcasing an interactive D3 radar chart (with facetting).</p>
-  </header>
-
-
-  <!-- main content -->
+   <!-- main content -->
   <div class="main container">
-    <h2>Visualization</h2>
 
     <!-- visualization -->
     <div class="visualization col-xs-7">
-      <p>Select example:
-        <select ng-options="example for example in radar.examples" ng-model="radar.exampleSelected" ng-change="radar.selectExample(radar.exampleSelected)"></select>
-      </p>
       <div class="visualization">
         <radar csv="radar.csv" config="radar.config"></radar>
       </div>
@@ -45,40 +34,7 @@
 
 
     <!-- configuration -->
-    <div class="configuration col-xs-5">
-      <form>
-        <h3>Configuration Parameters</h3>
-        <div class="form-group">
-          <label>Width:</label>
-          <input type="number" class="form-control-inline" step="50" ng-model="radar.config.w" />
-          <label>Height:</label>
-          <input type="number" class="form-control-inline" step="50" ng-model="radar.config.h" />
-        </div>
-        <div class="form-group">
-          <label>Levels:</label>
-          <input type="number" class="form-control-inline" step="1" ng-model="radar.config.levels" />
-        </div>
-        <div class="form-group">
-          <label>Padding Scale:</label>
-          <input type="number" class="form-control-inline" step="0.1" ng-model="radar.config.facetPaddingScale" />
-        </div>
-        <div class="form-group">
-          <label>Label Scale:</label>
-          <input type="number" class="form-control-inline" step="0.1" ng-model="radar.config.labelScale" />
-        </div>
-        <div class="form-group">
-          <label class="checkbox"><input type="checkbox" ng-model="radar.config.facet" /><span class="text-primary">Facet Plot</span></label>
-          <label class="checkbox"><input type="checkbox" ng-model="radar.config.showLevels" />Levels</label>
-          <label class="checkbox"><input type="checkbox" ng-model="radar.config.showAxes" />Axes</label>
-          <label class="checkbox"><input type="checkbox" ng-model="radar.config.showVertices" />Vertices</label>
-          <label class="checkbox"><input type="checkbox" ng-model="radar.config.showPolygons" />Polygons</label>
-          <label class="checkbox"><input type="checkbox" ng-model="radar.config.showLegend" />Legend</label>
-          <label class="checkbox"><input type="checkbox" ng-model="radar.config.showLevelsLabels" />Levels Labels</label>
-          <label class="checkbox"><input type="checkbox" ng-model="radar.config.showAxesLabels" />Axes Labels</label>
-        </div>
-        <p class="text-muted">(NOTE: Not all configuration options are shown, refer to <code>README.md</code> or <code>radarDraw.js</code> for more details)</p>
-      </form>
-    </div>
+    
   </div>
   <hr />
 

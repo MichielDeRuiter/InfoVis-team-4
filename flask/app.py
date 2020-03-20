@@ -402,10 +402,10 @@ def radar_screen():
 				},
 				{
 					"axis": "Average awards",
-					"value": round(random.uniform(0,0.1), 5),
+					"value": round(random.uniform(0,0.1)*10, 5),
 					"valueMin": 0,
-					"valueMax": 0.1,
-					"description": 'Average awards per link' 
+					"valueMax": 1,
+					"description": 'Average awards per link, scaled to 0-1' 
 				}
 			]
 		}
