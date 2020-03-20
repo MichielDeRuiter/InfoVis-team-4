@@ -16,8 +16,8 @@ export default class Network3D
 		this.nodes = {};
 
 		function lerpColor(a, b, amount) { 
-			//amount = Math.round(amount * 10) / 10
-			amount = ( amount - 0.5 ) * 2
+			//amount = Math.round(amount * 10) / 10`
+			amount = ( amount * amount)
 		    var ah = parseInt(a.replace(/#/g, ''), 16),
 		        ar = ah >> 16, ag = ah >> 8 & 0xff, ab = ah & 0xff,
 		        bh = parseInt(b.replace(/#/g, ''), 16),
@@ -44,7 +44,7 @@ export default class Network3D
 			.nodeRelSize(0.125)
 			.cooldownTime(5000000)
 			.forceEngine('ngraph')
-			//.linkCurvature(0.1)
+	
 			.linkMaterial("MeshBasicMaterial")
 			.backgroundColor("#333333")
 			.linkWidth((link)=>{return link.volume / 20 + 1;})
@@ -139,6 +139,12 @@ export default class Network3D
         		return nodes_to_see[node.subredditName]
         	})
     	}, 100)
+
+    	this.Graph.linkCurvature(0.1)
+			.linkDirectionalArrowLength(1)
+			.linkDirectionalArrowRelPos(1)
+			.linkDirectionalParticles(2)
+			.linkDirectionalParticleWidth(2)
 	}
 
 	on_hover(node, position){
