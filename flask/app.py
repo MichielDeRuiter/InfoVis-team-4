@@ -1,50 +1,44 @@
+from bokeh.layouts import row, column, widgetbox
+from bokeh.embed import json_item
+
 from flask import Flask, jsonify, render_template, request, Response
 from flask_cors import cross_origin
 from flask_socketio import SocketIO
 
-from bokeh.layouts import row, column, widgetbox
-from bokeh.embed import json_item
+from random import randint
 
-import compare_plot
 import json
 import os
 import pandas as pd
 import random
 import time
 
-from random import randint
+# App config
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'kjhlfsddkjhlsdakjhl'
 socketio = SocketIO(app)
 
-#data_title = pd.read_csv('../reddit_raw_data/reddit_title_props_seperated.csv')
-#data_body = pd.read_csv('../reddit_raw_data/reddit_body_props_seperated.csv')
-#data = pd.read_csv('../data/reddit_total.csv')
-#data_50 = pd.read_csv('../../data/reddit_total_50.csv')
-
 pd.options.mode.chained_assignment = None  # default='warn'
 
+# Load in the data and do some pre-processing
 
 data = pd.read_csv('../data/reddit_total_400.csv')
 data['LINK_SENTIMENT'][data['LINK_SENTIMENT'] < -0] = 0
 data_days = data.groupby('days').size().to_frame()
+print('Data Loaded')
 
 with open('../data/sentiment_pairs.json', 'r') as file:
     sen_pairs = json.load(file)
-
 with open('../data/dict_amount.json', 'r') as file:
-    dict_amount = json.load(file)
-	
-with open('../data/dict_sentiment.json', 'r') as file:
-    dict_sentiment = json.load(file)
-
+	dict_amount = json.load(file)
 dict_amount_df = pd.DataFrame(dict_amount)
-
+print('Amounts loaded')
+with open('../data/dict_sentiment.json', 'r') as file:
+	dict_sentiment = json.load(file)
 dict_sentiment_df = pd.DataFrame(dict_sentiment)
-
-
-
+print('Sentiment loaded')
+# Structure of the default response
 main_menu_response = {
     "nodes": [
         {
@@ -205,12 +199,13 @@ Returns a list of data for the network and bar graph visualization.
 Optional arguments:
 fromDate: inclusive start date for the filtering
 endDate: exclusive end date for the filtering
-example: http://localhost:5000/main?fromDate=20&endDate=800
+top: return only the top given number of subreddits
+example: http://localhost:5000/main?fromDate=20&endDate=800, http://localhost:5000/main?fromDate=20&endDate=800&top=50
 """
 @app.route("/main", methods=['GET', 'POST'])
 @cross_origin()
 def main_screen():
-	fromDate, endDate = None, None
+	# set the default parameters if not given
 	if 'fromDate' in request.args:
 		fromDate = int(request.args['fromDate'])
 	else:
@@ -227,6 +222,7 @@ def main_screen():
 		data2 = data[data.SOURCE_SUBREDDIT.isin(v.index[v.gt(treshold)])]
 	else:
 		data2 = data
+	# Code for every day with a pre-processed dataset
 	if (fromDate == 0 and endDate == 1217):
 		response = data2.loc[data2['days'].between(fromDate, endDate)]
 		uniques = response.SOURCE_SUBREDDIT.unique()
@@ -245,6 +241,7 @@ def main_screen():
 			status=200,
 			mimetype="application/json"
 		)
+	# Code for given a time range
 	else:
 		response = data2.loc[data2['days'].between(fromDate, endDate)]
 		sent_dt = dict_sentiment_df.iloc[:, fromDate:endDate].sum(axis=1)
@@ -266,10 +263,17 @@ def main_screen():
 			mimetype="application/json"
 		)
 
+"""
+Returns a list of data for volume per day.
+
+Optional arguments:
+fromDate: inclusive start date for the filtering
+endDate: exclusive end date for the filtering
+example: http://localhost:5000/maintotal?fromDate=20&endDate=800
+"""
 @app.route("/maintotal", methods=['GET', 'POST'])
 @cross_origin()
 def main_screen_total():
-	fromDate, endDate = None, None
 	if 'fromDate' in request.args:
 		fromDate = int(request.args['fromDate'])
 	else:
@@ -323,14 +327,15 @@ def main_screen_date_range():
 		mimetype="application/json"
 	)
 
+# Function to convert the GET string to a list
 def Convert(string): 
     li = list(string.split(",")) 
     return li 
 """
-Returns data for the radar plot for a given 1 subreddit
+Returns data for the radar plot for a given 1 or multiple subreddits splitted by a comma
 Mandatory parameters:
-name: exact name of the subreddit for which to retrieve statistics
-example: http://localhost:5000/radar?name=soccer
+name(s): exact name of the subreddit for which to retrieve statistics
+example: http://localhost:5000/radar?name=soccer,2007scape,politics
 """
 @app.route("/radar", methods=['GET', 'POST'])
 @cross_origin()
@@ -396,15 +401,7 @@ def radar_screen():
 		mimetype="application/json"
 	)
 
-@app.route("/example", methods=['GET', 'POST'])
-def example():
-	if 'query' in request.args:
-		query = request.args['query']
-		print(query)
-		return jsonify(filtered_main_menu_response)
-	else: return jsonify(main_menu_response)
-
-
+	
 ###################
 # TESTING ENDPOINTS
 ###################
@@ -412,36 +409,9 @@ def example():
 def index():
     return render_template('index.html', data=data)
 
-@app.route('/vis1')
-def vis1():
-    return render_template('vis1.html', dataframe=data[0:100])
-
-@app.route('/vis2')
-def vis2():
-    return render_template('vis2.html', data=data)
-
-@app.route('/vis3')
-def vis3():
-    return render_template('vis3.html')
-
 @app.route('/vis4')
 def vis4():
     return render_template('vis4.html', name='leagueoflegends,soccer')
-
-# @app.route('/data_the_avengers.csv')
-# def favicon():
-#     return redirect(url_for('static', filename='csv/data_the_avengers.csv'))
-
-@app.route('/plot')
-def plot():
-    plot1 = compare_plot.create_pie_out(data)
-    plot3 = compare_plot.create_pie_in(data)
-    layout = row(plot1, plot3)
-    plots = json_item(layout, "myplot")
-    return json.dumps(plots)
-
-
-
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
