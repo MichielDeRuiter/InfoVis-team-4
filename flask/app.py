@@ -1,19 +1,19 @@
-import os
-from flask import Flask, render_template, request
+from flask import Flask, jsonify, render_template, request, Response
 from flask_cors import cross_origin
 from flask_socketio import SocketIO
-import pandas as pd
-import compare_plot
-from flask import jsonify
-from flask import Response
-
 
 from bokeh.layouts import row, column, widgetbox
 from bokeh.embed import json_item
 
+import compare_plot
 import json
+import os
+import pandas as pd
+import random
+import time
 
 from random import randint
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'kjhlfsddkjhlsdakjhl'
 socketio = SocketIO(app)
@@ -22,8 +22,27 @@ socketio = SocketIO(app)
 #data_body = pd.read_csv('../reddit_raw_data/reddit_body_props_seperated.csv')
 #data = pd.read_csv('../data/reddit_total.csv')
 #data_50 = pd.read_csv('../../data/reddit_total_50.csv')
+
+pd.options.mode.chained_assignment = None  # default='warn'
+
+
 data = pd.read_csv('../data/reddit_total_400.csv')
+data['LINK_SENTIMENT'][data['LINK_SENTIMENT'] < -0] = 0
 data_days = data.groupby('days').size().to_frame()
+
+with open('../data/sentiment_pairs.json', 'r') as file:
+    sen_pairs = json.load(file)
+
+with open('../data/dict_amount.json', 'r') as file:
+    dict_amount = json.load(file)
+	
+with open('../data/dict_sentiment.json', 'r') as file:
+    dict_sentiment = json.load(file)
+
+dict_amount_df = pd.DataFrame(dict_amount)
+
+dict_sentiment_df = pd.DataFrame(dict_sentiment)
+
 
 
 main_menu_response = {
@@ -191,16 +210,15 @@ example: http://localhost:5000/main?fromDate=20&endDate=800
 @app.route("/main", methods=['GET', 'POST'])
 @cross_origin()
 def main_screen():
-	import time
 	fromDate, endDate = None, None
 	if 'fromDate' in request.args:
-		fromDate = request.args['fromDate']
+		fromDate = int(request.args['fromDate'])
 	else:
 		fromDate = 0
 	if 'endDate' in request.args:
-		endDate = request.args['endDate']
+		endDate = int(request.args['endDate'])
 	else:
-		endDate = 1216
+		endDate = 1217
 	if 'top' in request.args:
 		top = request.args['top']
 		v = data.SOURCE_SUBREDDIT.value_counts()
@@ -209,25 +227,38 @@ def main_screen():
 		data2 = data[data.SOURCE_SUBREDDIT.isin(v.index[v.gt(treshold)])]
 	else:
 		data2 = data
-	if (fromDate != None and endDate != None):
-		response = data2.loc[data2['days'].between(int(fromDate), int(endDate))]
-		total_value = len(response)
+	if (fromDate == 0 and endDate == 1217):
+		response = data2.loc[data2['days'].between(fromDate, endDate)]
 		uniques = response.SOURCE_SUBREDDIT.unique()
 		link_pairs_temp = response.groupby(['SOURCE_SUBREDDIT', 'TARGET_SUBREDDIT']).size().reset_index()
-		#link_pairs_temp.to_csv('temp.csv')
 		link_pairs_temp = link_pairs_temp.loc[link_pairs_temp[0].ge(5)]
 		link_pairs = link_pairs_temp.values.tolist()
-		nodes = []
-		links = []
-		for reddit in uniques:
-			nodes.append({"subredditName":reddit, "subscriberCount":randint(0,100000)})
-		for link in link_pairs:
-			links.append({
-			"fromSubredditName": link[0],
-            "toSubredditName": link[1],
-            "sentiment": 0.3,
-            "volume": link[2]
-			})
+		nodes = [{"subredditName":reddit, "subscriberCount":randint(0,100000)} for reddit in uniques]
+		links = [{	"fromSubredditName": link[0],
+					"toSubredditName": link[1],
+					"sentiment": sen_pairs.get(link[0]+link[1], 0.5),
+					"volume": link[2]} 
+				for link in link_pairs]
+		main_menu_response_filtered = {"nodes":nodes,"links":links}
+		return app.response_class(
+			response=json.dumps(main_menu_response_filtered),
+			status=200,
+			mimetype="application/json"
+		)
+	else:
+		response = data2.loc[data2['days'].between(fromDate, endDate)]
+		sent_dt = dict_sentiment_df.iloc[:, fromDate:endDate].sum(axis=1)
+		amount_dt = dict_amount_df.iloc[:, fromDate:endDate].sum(axis=1)
+		uniques = response.SOURCE_SUBREDDIT.unique()
+		link_pairs_temp = response.groupby(['SOURCE_SUBREDDIT', 'TARGET_SUBREDDIT']).size().reset_index()
+		link_pairs_temp = link_pairs_temp.loc[link_pairs_temp[0].ge(5)]
+		link_pairs = link_pairs_temp.values.tolist()
+		nodes = [{"subredditName":reddit, "subscriberCount":randint(0,100000)} for reddit in uniques]
+		links = [{	"fromSubredditName": link[0],
+					"toSubredditName": link[1],
+					"sentiment": sent_dt.get(link[0]+link[1])/amount_dt.get(link[0]+link[1]),
+					"volume": link[2]} 
+				for link in link_pairs]
 		main_menu_response_filtered = {"nodes":nodes,"links":links}
 		return app.response_class(
 			response=json.dumps(main_menu_response_filtered),
@@ -240,16 +271,16 @@ def main_screen():
 def main_screen_total():
 	fromDate, endDate = None, None
 	if 'fromDate' in request.args:
-		fromDate = request.args['fromDate']
+		fromDate = int(request.args['fromDate'])
 	else:
 		fromDate = 0
 	if 'endDate' in request.args:
-		endDate = request.args['endDate']
+		endDate = int(request.args['endDate'])
 	else:
-		endDate = 1216
+		endDate = 1217
 	if (fromDate != None and endDate != None):
 		response = data_days[fromDate:endDate]
-		main_menu_response_filtered = []
+		main_menu_response_filtered = response.to_dict()[0]
 		return app.response_class(
 				response=json.dumps(main_menu_response_filtered),
 				status=200,
@@ -267,35 +298,30 @@ example: http://localhost:5000/search?name=soccer
 def main_screen_date_range():
 	if 'name' in request.args:
 		name = request.args['name']
-		response = data.loc[data['SOURCE_SUBREDDIT'] == name]
-		link_pairs = response.groupby(['SOURCE_SUBREDDIT', 'TARGET_SUBREDDIT']).size().reset_index().values.tolist()
-		print(link_pairs)
-		nodes = []
-		links = []
-		for link in link_pairs:
-			nodes.append({
-				"subredditName": link[1],
-				"subscriberCount":randint(0,100000)
-			})
-			links.append({
-				"fromSubredditName": link[0],
-				"toSubredditName": link[1],
-				"sentiment": 0.3,
-				"volume": link[2]
-			})
-		print(nodes)
-		filtered_main_menu_response_searched = {"nodes":nodes,"links":links}
-		return app.response_class(
-			response=json.dumps(filtered_main_menu_response_searched),
-			status=200,
-			mimetype="application/json"
-		)
-	else: 
-		return app.response_class(
-			response=json.dumps(filtered_main_menu_response),
-			status=200,
-			mimetype="application/json"
-		)
+	else:
+		name = 'soccer'
+	response = data.query('SOURCE_SUBREDDIT == @name')
+	link_pairs = response.groupby(['SOURCE_SUBREDDIT', 'TARGET_SUBREDDIT']).size().reset_index().values.tolist()
+	nodes = []
+	links = []
+	for link in link_pairs:
+		nodes.append({
+			"subredditName": link[1],
+			"subscriberCount":randint(0,100000)
+		})
+		sent = response.query('SOURCE_SUBREDDIT == @link[0] and TARGET_SUBREDDIT == @link[1]')['LINK_SENTIMENT']
+		links.append({
+			"fromSubredditName": link[0],
+			"toSubredditName": link[1],
+			"sentiment": sent.sum()/len(sent),
+			"volume": link[2]
+		})
+	filtered_main_menu_response_searched = {"nodes":nodes,"links":links}
+	return app.response_class(
+		response=json.dumps(filtered_main_menu_response_searched),
+		status=200,
+		mimetype="application/json"
+	)
 
 def Convert(string): 
     li = list(string.split(",")) 
@@ -312,68 +338,63 @@ def radar_screen():
 	rader_columns=['SOURCE_SUBREDDIT', 'LINK_SENTIMENT', 'Automated readability index']
 	if 'name' in request.args:
 		list = request.args['name']
-		list = Convert(list)
-		#name = name[0]
-		#name = name.lower()
-		nodes = []
-		for name in list:
-			name = name.lower()
-			print(name)
-			response1 = data.loc[data['SOURCE_SUBREDDIT'] == name][rader_columns]
-			response2 = data.loc[data['TARGET_SUBREDDIT'] == name]['TARGET_SUBREDDIT']
-			response1['Link_normalized']=(response1['LINK_SENTIMENT']-response1['LINK_SENTIMENT'].min())/(response1['LINK_SENTIMENT'].max()-response1['LINK_SENTIMENT'].min())
-			response1['ARI_normalized']=(response1['Automated readability index']-response1['Automated readability index'].min())/(response1['Automated readability index'].max()-response1['Automated readability index'].min())
-			incoming_volume = len(response2)/(len(response1)+len(response2))
-			radar_view_response_searched = {
-				"group": name,
-				"axes": [
-					{
-						"axis": "Automated readability index",
-						"valueOLD": float(response1['Automated readability index'].mean()),
-						"value": float(response1['ARI_normalized'].mean()),
-						"valueMin": float(response1['Automated readability index'].min()),
-						"valueMax": float(response1['Automated readability index'].max()),
-						"description": 'TEST' 
-					},
-					{
-						"axis": "Sentiment",
-						"value": float(response1['LINK_SENTIMENT'].mean()),
-						"valueNormalized": float(response1['Link_normalized'].mean()),
-						"valueMin": float(response1['LINK_SENTIMENT'].min()),
-						"valueMax": float(response1['LINK_SENTIMENT'].max())
-					},
-					{
-						"axis": "Volume Incoming Ratio",
-						"value": float(incoming_volume),
-						"valueNormalized": 0.45,
-						"valueMin": 0,
-						"valueMax": 1
-					},
-					{
-						"axis": "Volume Outgoing Ratio",
-						"value": float(1-incoming_volume),
-						"valueNormalized": 0.25000000001,  # this is on purpose to test UI rounding
-						"valueMin": 0,
-						"valueMax": 1
-					}
-					
-				]
-			}
-			nodes.append(radar_view_response_searched)
-		
-		return app.response_class(
-			response=json.dumps(nodes),
-			status=200,
-			mimetype="application/json"
-		)
-	else: 
-		return app.response_class(
-			response=json.dumps(radar_view_response),
-			status=200,
-			mimetype="application/json"
-		)
-
-
+	else:
+		list = 'soccer'
+	list = Convert(list)
+	nodes = []
+	for name in list:
+		name = name.lower()
+		response1 = data.loc[data['SOURCE_SUBREDDIT'] == name][rader_columns]
+		response2 = data.loc[data['TARGET_SUBREDDIT'] == name]['TARGET_SUBREDDIT']
+		response1['ARI_normalized']=(response1['Automated readability index']-response1['Automated readability index'].min())/(response1['Automated readability index'].max()-response1['Automated readability index'].min())
+		incoming_volume = len(response2)/(len(response1)+len(response2))
+		radar_view_response_searched = {
+			"group": name,
+			"axes": [
+				{
+					"axis": "Automated readability index",
+					"value": float(response1['ARI_normalized'].mean()),
+					"valueMin": float(response1['Automated readability index'].min()),
+					"valueMax": float(response1['Automated readability index'].max()),
+					"description": 'Automated readability index' 
+				},
+				{
+					"axis": "Sentiment",
+					"value": response1['LINK_SENTIMENT'].sum()/len(response1['LINK_SENTIMENT']),
+					"valueMin": 0,
+					"valueMax": 1,
+					"description": 'Sentiment of given subreddit' 
+				},
+				{
+					"axis": "Volume Incoming Ratio",
+					"value": float(incoming_volume),
+					"valueMin": 0,
+					"valueMax": 1,
+					"description": 'Incoming value compared to outgoing volume' 
+				},
+				{
+					"axis": "Volume Outgoing Ratio",
+					"value": float(1-incoming_volume),
+					"valueMin": 0,
+					"valueMax": 1,
+					"description": 'Outgoing value compared to incoming volume' 
+				},
+				{
+					"axis": "Average awards",
+					"value": round(random.uniform(0,0.1), 5),
+					"valueMin": 0,
+					"valueMax": 0.1,
+					"description": 'Average awards per link' 
+				}
+			]
+		}
+		nodes.append(radar_view_response_searched)
+	
+	return app.response_class(
+		response=json.dumps(nodes),
+		status=200,
+		mimetype="application/json"
+	)
 
 @app.route("/example", methods=['GET', 'POST'])
 def example():
