@@ -63,3 +63,10 @@ main {
     text-align: left;
   }
 }
+
+
+.axis-labels {
+  z-index: 2
+}
+
+

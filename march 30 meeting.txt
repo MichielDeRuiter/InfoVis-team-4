@@ -1,0 +1,34 @@
+march 30
+
+thrusday complete viz ready, everything, should work fine, user stories highlights, how to present them, user stories are questions, those questiones needs to be there, the response. 
+
+>>do the accions, like zoom in, hightlights, show highliths,
+we should have a guide that walk you around
+
+>>fix the colors, find a scheme and a palette
+
+>>we have waiting time, if we need to load something, we need a waiting time
+
+>>next week small details, small transitions (to be see)
+
+
+
+>>document
+
+>motivations
+>show how our viz are different from the regular graphs
+>indentify passive and active
+>passive : background
+>active L interactive
+>justify color, position, text, fonts etc,
+>results where we present the findings from our visualizations
+-> we archives bla bla bla
+
+print screen of the components and how they communicate with each others (on the images)
+> make a video and upload it to canvas (we have it on canvas), for them.
+
+but there's a live demo to be presented.
+
+
+
+

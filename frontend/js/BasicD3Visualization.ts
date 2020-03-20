@@ -32,4 +32,7 @@ export default abstract class BasicD3Visualization {
     	let offsetHeight = this.container.offsetHeight;
     	let offsetWidth = this.container.offsetWidth;
     }
+
+    on_resize(): void{
+    }
 }
