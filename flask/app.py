@@ -53,7 +53,7 @@ except FileNotFoundError:
 	dict_sentiment_df = pd.DataFrame(dict_sentiment)
 	dict_sentiment_df.to_csv('../data/dict_sentiment.csv')
 	print('Sentiment loaded and file saved')
-
+print('API Ready')
 # Structure of the default response
 main_menu_response = {
     "nodes": [
