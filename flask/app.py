@@ -430,4 +430,4 @@ def vis4():
     return render_template('vis4.html', name='leagueoflegends,soccer')
 
 if __name__ == '__main__':
-	socketio.run(app, debug=False)
+	socketio.run(app, debug=True, use_reloader=False)
