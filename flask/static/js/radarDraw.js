@@ -14,17 +14,17 @@ function radarDraw(scope, element) {
     })
   }
 
-  scope.$watch("[csv, config]", function() {
+  ///scope.$watch("[csv, config]", function() {
     csv = scope.csv;
     config = scope.config;
     // var data = csv2json(csv);
-    get_data_and_draw("badpolitics,politics,shitredditsays,shitpoliticssays")
+  ///  get_data_and_draw("badpolitics,politics,shitredditsays,shitpoliticssays")
 
     // var data = [{"group":"a","axis":"mileage","value":70,"description":""},{"group":"a","axis":"price","value":100,"description":""},{"group":"a","axis":"safety","value":80,"description":""},{"group":"a","axis":"performance","value":90,"description":""},{"group":"a","axis":"interior","value":74,"description":""},{"group":"a","axis":"warranty","value":70,"description":""},{"group":"b","axis":"mileage","value":86,"description":""},{"group":"b","axis":"price","value":60,"description":""},{"group":"b","axis":"safety","value":94,"description":""},{"group":"b","axis":"performance","value":66,"description":""},{"group":"b","axis":"interior","value":34,"description":""},{"group":"b","axis":"warranty","value":97,"description":""},{"group":"c","axis":"mileage","value":46,"description":""},{"group":"c","axis":"price","value":76,"description":""},{"group":"c","axis":"safety","value":64,"description":""},{"group":"c","axis":"performance","value":36,"description":""},{"group":"c","axis":"interior","value":56,"description":""},{"group":"c","axis":"warranty","value":65,"description":""}]
     // call the D3 RadarChart.draw function to draw the vis on changes to data or config
     // RadarChart.draw(element[0], data, config);  // call the D3 RadarChart.draw function to draw the vis on changes to data or config
 
-  });
+  ///});
 
 
   // helper function csv2json to return json data from csv

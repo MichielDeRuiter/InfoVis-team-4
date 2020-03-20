@@ -14,13 +14,13 @@ export default class SearchHandler
 		this.input_text = document.getElementById('button-input');
 		this.button = document.getElementById('button-search');
 		this.form = document.getElementById('form-search');
-		this.form.addEventListener('submit', this.search);
+		this.form.addEventListener('submit', this.search.bind(this));
 
 	}
 
 	search(asd){
   		event.preventDefault();
-		console.log(asd)
+		this.eventHandler.search_node(this.input_text.value)
 	}
 
 }

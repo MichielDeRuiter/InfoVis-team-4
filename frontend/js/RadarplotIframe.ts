@@ -28,7 +28,7 @@ export default class RadarplotIframe
 
 		if (!this.last_four.includes(node)) {
 
-			if (this.last_four.length > 4) {
+			if (this.last_four.length > 3) {
 				this.last_four.pop()
 			}
 

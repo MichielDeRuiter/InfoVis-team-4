@@ -59,6 +59,10 @@ export default abstract class EventHandler {
         this.network.update_dates(date0, date1)
     }
 
+    search_node(node):void{
+        this.network.search_node(node);
+    }
+
     on_network_over(node_name, position): void{
         this.radarplot.on_node_select(node_name, position);
     }
@@ -66,6 +70,7 @@ export default abstract class EventHandler {
     on_network_over_ends(asd): void{
         this.radarplot.on_node_unselect()
     }
+
 
     on_resize(event):void {
     console.log('asd')
