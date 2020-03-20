@@ -10,27 +10,33 @@ export default class Network3D
 	{
 		this.eventHandler = eventHandler;
 		this.eventHandler.subscribe_network(this)
-		
+		console.log(data)
 		this.Graph = ForceGraph3D()(document.getElementById("network"));
 		//Graph.resetProps();
 		let nodes = {};
 		data.nodes.map((node)=>{return nodes[node.id] = true});
 		this.Graph
 			.cooldownTicks(200)
-			.nodeLabel('id')
+			.nodeLabel('subredditName')
+			.nodeId('subredditName')
+
 			.nodeAutoColorBy('subscriberCount')
 			.nodeVal('subscriberCount')
+
+			.linkTarget('toSubredditName')
+			.linkSource('fromSubredditName')
+
+
 			.nodeRelSize(0.125)
 			//.cooldownTime(5000000)
 			.forceEngine('ngraph')
 			.linkVisibility((link)=>{
-				//console.log(nodes)
-				return  nodes[link.source]
+				return  nodes[link.toSubredditName]
 			})
 			.backgroundColor("#333333")
-			.linkWidth((link)=>{return link.value / 20;})
-			//.linkColor((link)=>{return link.sentiment > 0.5 ? "#33ff55" : "#ff3355"})
-			.linkColor((link)=>{return Math.random() > 0.5 ? "#33ff55" : "#ff3355"})
+			.linkWidth((link)=>{return link.volume / 20;})
+			.linkColor((link)=>{return link.sentiment > 0.9 ? "#33ff55" : "#ff3355"})
+			//.linkColor((link)=>{return Math.random() > 0.5 ? "#33ff55" : "#ff3355"})
 			.onNodeHover(
 				(node)=>{
 
@@ -58,11 +64,15 @@ export default class Network3D
 						//return node.id + " : " + node.subscriberCount
 					//}
 			})
-
 			.width(document.getElementById("network").offsetWidth)
 			.height(document.getElementById("network").offsetHeight)
-			.graphData(data);
+			//.graphData(data);
 	}
+
+	update_network(data) {
+		this.Graph.graphData(data);
+	}
+
 
 	on_hover(node, position){
 		this.eventHandler.on_network_over(node, position)
