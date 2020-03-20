@@ -10,6 +10,7 @@
 	<link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/19.2.6/css/dx.light.css" />
 	<script src="https://cdn3.devexpress.com/jslib/19.2.6/js/dx.all.js"></script>
 	<!-- end slider -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 
 	<script src="https://d3js.org/d3.v4.min.js"></script>
@@ -26,11 +27,11 @@
 	}
 
 	#network {
+		position: absolute;
+		top: 0;
 		height: 80%;
 		width: 100%;
-		position: absolute;
 		background-color: powderblue;
-		position: absolute;
 	}
 
 	#timeline {
@@ -53,8 +54,8 @@
 		width: 500px;
 		background-color: lightsalmon	;
 		position: absolute;
-		top: 40px;
-		left: 40px;
+		top: 0;
+		right: 0;
 		z-index: 15;
 	}
 
@@ -86,6 +87,52 @@
 	}
 
 	.bar { fill: steelblue; }
+
+
+body {
+  font-family: Arial;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+form.example {
+	position: absolute;
+	margin:auto;max-width:300px
+}
+
+form.example input[type=text] {
+  padding: 10px;
+  font-size: 17px;
+  border: 1px solid grey;
+  float: left;
+  width: 80%;
+  background: #f1f1f1;
+}
+
+form.example button {
+  float: left;
+  width: 20%;
+  padding: 10px;
+  background: #1cb2f5;
+  color: white;
+  font-size: 17px;
+  border: 1px solid grey;
+  border-left: none;
+  cursor: pointer;
+}
+
+form.example button:hover {
+  background: #0b7dda;
+}
+
+form.example::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
 </style>
 
 <body>
@@ -93,6 +140,12 @@
 	<div id="network"></div>
 	<div id="radarplot" class="container-hidden"></div>
 	<div id="range-selector"></div>
+
+
+	<form id="form-search" class="example" style="">
+	  <input id="button-input" type="text" placeholder="Search.." name="search2">
+	  <button id="button-search" type="submit"><i class="fa fa-search"></i></button>
+	</form>
 
 </body>
 	<script src="./index.js"></script>
