@@ -17,9 +17,6 @@
 			</a>-->
 			<div class="navbar-items">
 				<a class="nav-link {%if request.path == '/'%}active{%endif%}" href="{{ url_for('index') }}">Home</a>
-				<a class="nav-link {%if request.path == '/vis1'%}active{%endif%}" href="{{ url_for('vis1') }}">Vis 1</a>
-				<a class="nav-link {%if request.path == '/vis2'%}active{%endif%}" href="{{ url_for('vis2') }}">Vis 2</a>
-				<a class="nav-link {%if request.path == '/vis3'%}active{%endif%}" href="{{ url_for('vis3') }}">Vis 3</a>
                 <a class="nav-link {%if request.path == '/vis4'%}active{%endif%}" href="{{ url_for('vis4') }}">Vis 4</a>
 				<a href="javascript:void(0);" class="icon" onclick="myFunction()">
 					<i class="fa fa-bars"></i>

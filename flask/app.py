@@ -26,24 +26,40 @@ pd.options.mode.chained_assignment = None  # default='warn'
 data = pd.read_csv('../data/reddit_total_400.csv')
 data['LINK_SENTIMENT'][data['LINK_SENTIMENT'] < -0] = 0
 data_days = data.groupby('days').size().to_frame()
-print('Data Loaded')
+print('Dataset Loaded')
 
 with open('../data/sentiment_pairs.json', 'r') as file:
     sen_pairs = json.load(file)
-with open('../data/dict_amount.json', 'r') as file:
-	dict_amount = json.load(file)
-dict_amount_df = pd.DataFrame(dict_amount)
-print('Amounts loaded')
-with open('../data/dict_sentiment.json', 'r') as file:
-	dict_sentiment = json.load(file)
-dict_sentiment_df = pd.DataFrame(dict_sentiment)
-print('Sentiment loaded')
+	
+try:
+	dict_amount_df = pd.read_csv('../data/dict_amount.csv', index_col=0)
+	print('Amounts loaded')
+except FileNotFoundError:
+	print('File not found, creating amounts CSV') 
+	with open('../data/dict_amount.json', 'r') as file:
+		dict_amount = json.load(file)
+	dict_amount_df = pd.DataFrame(dict_amount)
+	dict_amount_df.to_csv('../data/dict_amount.csv')
+	print('Amounts loaded and file saved')
+
+
+try:
+	dict_sentiment_df = pd.read_csv('../data/dict_sentiment.csv', index_col=0)
+	print('Sentiment loaded')
+except FileNotFoundError:
+	print('File not found, creating Sentiment CSV') 
+	with open('../data/dict_sentiment.json', 'r') as file:
+		dict_sentiment = json.load(file)
+	dict_sentiment_df = pd.DataFrame(dict_sentiment)
+	dict_sentiment_df.to_csv('../data/dict_sentiment.csv')
+	print('Sentiment loaded and file saved')
+
 # Structure of the default response
 main_menu_response = {
     "nodes": [
         {
             "subredditName": "soccer",
-            "subscriberCount": 500
+            "subscriberCount": 600
         },
         {
             "subredditName": "barcelona",
@@ -414,4 +430,4 @@ def vis4():
     return render_template('vis4.html', name='leagueoflegends,soccer')
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+	socketio.run(app, debug=False)
