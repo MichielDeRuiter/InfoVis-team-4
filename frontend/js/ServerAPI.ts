@@ -26,6 +26,8 @@ export default class ServerAPI{
         d3.json("http://127.0.0.1:5000/main?fromDate=" + d0 + "&endDate=" + d1, callback)
     }
 
-
+    public getMainTotal(callback): Object {
+        d3.json("http://127.0.0.1:5000/maintotal", callback)
+    }
     
 }

@@ -16,7 +16,7 @@ import ServerAPI from './js/ServerAPI';
 const eventHandler = new EventHandler();
 
 const radarplot = new RadarplotIframe(eventHandler);
-const timeline = new Timeline(eventHandler);
+//const timeline = new Timeline(eventHandler);
 const network3D = new Network3D(eventHandler);
 const timeslider = new Timeslider(eventHandler);
 

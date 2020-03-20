@@ -1,3 +1,4 @@
+import ServerAPI from './ServerAPI';
 
 export default class Timeslider
 {
@@ -7,24 +8,44 @@ export default class Timeslider
         this.eventHandler = eventHandler;
         this.eventHandler.subscribe_timeslider(this)
 
-        var dataSource = [
-            { x: new Date(2013, 12, 31), amount: 2000, y2: 10 },
-            { x: new Date(2014, 2, 20), amount: 5000, y2: 15 },
-            { x: new Date(2015, 2, 30), amount: 4000, y2: 10 },
-            { x: new Date(2016, 3, 20), amount: 4500, y2: 5 },
-            { x: new Date(2017, 4, 25), amount: 6000, y2: 6 },
-            { x: new Date(2017, 4, 30), amount: 2000, y2: 10 }
-        ];
+        let start_date = new Date(2013, 12, 31);
+        //enddate = new Date(2017, 4, 30)
+        let initial_date = start_date.getTime() / (1000*60*60*24);
 
-        let initial_date = dataSource[0].x.getTime() / (1000*60*60*24);
+        (ServerAPI.get()).getMainTotal( function(data2) {
+
+
+            let array_data = Object.values(data2);
+
+            const BLOCK = 15;
+            let arr = [];
+
+            for ( var i = 0; i < array_data.length; i+= BLOCK) {
+                let sum = 0;
+                for (var j = 0; j < BLOCK; j++) {
+                    sum += array_data[i + j];
+                }
+
+                arr.push({
+                    x : new Date((initial_date + i) * (1000*60*60*24)),
+                    amount : sum * sum
+                })
+
+            }
+            console.log(arr)
+
+            //let data = Object.values(data2).map((date, i )=>{
+            //    return {x : new Date((initial_date + i) * (1000*60*60*24)), amount : date * date}
+            //})
+        
         
         $(function(){
             $("#range-selector").dxRangeSelector({
-                dataSource: dataSource,
+                dataSource: arr,
 
                 chart: {
                     commonSeriesSettings: {
-                        type: 'line',
+                        type: 'bar',
                         argumentField: 'x'
                     },
                     series: [
@@ -63,6 +84,9 @@ export default class Timeslider
                 title: "Select Time Period"
             });
     
+        });
+
+
         });
     }
 }
